@@ -1,0 +1,27 @@
+<div ng-controller="ScoreTabCtrl" class="tab-container">
+  <ul class="tab">
+    <li><a href="#" id="tab-easy" class="tablinks" ng-click="openScoreTab('easy')">Easy</a></li>
+    <li><a href="#" id="tab-medium" class="tablinks" ng-click="openScoreTab('medium')">Medium</a></li>
+    <li><a href="#" id="tab-hard" class="tablinks" ng-click="openScoreTab('hard')">Hard</a></li>
+    <li><a href="#" id="tab-extreme" class="tablinks" ng-click="openScoreTab('extreme')">Extreme</a></li>
+  </ul>
+
+  <pre id="easy" class="tabcontent">
+    <div class="highscores">{{easyHighScores}}</div>
+  </pre>
+
+  <pre id="medium" class="tabcontent">
+    <div class="highscores">{{mediumHighScores}}</div>
+  </pre>
+
+  <pre id="hard" class="tabcontent">
+    <div class="highscores">{{hardHighScores}}</div>
+  </pre>
+
+  <pre id="extreme" class="tabcontent">
+    <div class="highscores">{{extremeHighScores}}</div>
+  </pre>
+
+</div>
+
+

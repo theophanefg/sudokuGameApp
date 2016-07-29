@@ -1,0 +1,28 @@
+<ion-view>
+  <ion-nav-title>{{playTitle}}</ion-nav-title>
+  <ion-content class="padding background">
+
+    <div id = "grid">
+      <div class = "horizontal"></div>
+      <div class = "vertical"></div>
+    </div>
+    <div class = "row"></div>
+    <div id = "numbers"></div>
+    <div class = "row"></div>
+    <div class = "row">
+      <button ng-click="erasePressed()"> effacer</button>
+      <button ng-click="changeGameMode()"> changer de mode</button>
+      <button ng-click="changeEntryMode()"> toggle notes</button>
+      <button ng-click="testJS()"> test api</button>
+    </div>
+    <div class = "row">
+      <p>gameMode: {{gameMode}}</p>
+    </div>
+    <div class = "row">
+      <p>entryMode: {{entryMode}}</p>
+    </div>
+
+    <p>{{errorSource}}</p>
+
+  </ion-content>
+</ion-view>
