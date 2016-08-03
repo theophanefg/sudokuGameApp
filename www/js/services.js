@@ -405,7 +405,7 @@ angular.module('starter.services', [])
     startNew1v1Game: function() {
       console.log('----startnew1v1game---');
       var xhr = new XMLHttpRequest();
-      xhr.open("GET", apiAddress+"/newgame/" + difficulty + "/1234", false);
+      xhr.open("GET", apiAddress+"/newgame/" + difficulty + "/1235", false);
       xhr.send();
       console.log("status" + xhr.status);
       console.log("text" + xhr.statusText);
@@ -426,7 +426,8 @@ angular.module('starter.services', [])
       //console.log('---generateGrid---');
       var gridNumber = Math.floor(Math.random() * 10); // 0 to 9
       console.log("grid number:" + gridNumber);
-      var gridString = this.getGridString(gridNumber);
+      var gridString = '076142893392865417184379562435718926627934185918526734861257349749683251253491678576142893392865417184379562435718926627934185918526734861257349749683251253491678';
+      //var gridString = this.getGridString(gridNumber);
       var completedGrid = this.getCompletedGrid(gridString);
       var cleanGrid = this.getCleanGrid(gridString);
       return this.shuffleGrids(completedGrid, cleanGrid);
@@ -736,9 +737,11 @@ angular.module('starter.services', [])
     saveScoreOnline: function () {
       console.log('----saveScoreOnline---');
       var xhr = new XMLHttpRequest();
-      var time = timerMin * 60 + timerSec;
-      xhr.open("GET", apiAddress+"/savescore/" + matchId + "/1234/" + time, false);
+      var time = (parseInt(timerMin) * 60 + parseInt(timerSec)).toString();
+      xhr.open("GET", apiAddress+"/savescore/" + matchId + "/1235/" + time, false);
       xhr.send();
+      console.log("winning status: " + JSON.parse(xhr.responseText));
+      return JSON.parse(xhr.responseText);
     },
 
     saveTime: function() {
@@ -796,7 +799,7 @@ angular.module('starter.services', [])
     loadTimers1v1: function() {
       console.log('----loadTimerSec1v1---');
       var xhr = new XMLHttpRequest();
-      xhr.open("GET", apiAddress+"/gettimer/" + matchId + "/1234", false);
+      xhr.open("GET", apiAddress+"/gettimer/" + matchId + "/1235", false);
       xhr.send();
       console.log("json stuff: " + JSON.parse(xhr.responseText));
       var totalSecTime = JSON.parse(xhr.responseText);
@@ -927,6 +930,7 @@ angular.module('starter.services', [])
     var highScoresMedium;
     var highScoresHard;
     var highScoresExtreme;
+    var recentScores;
 
     var monthNames = [
       "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dev"
@@ -941,11 +945,16 @@ angular.module('starter.services', [])
         return difficulty;
       },
 
+      getRecentScores: function() {
+        return recentScores;
+      },
+
       saveHighScores: function() {
         window.localStorage.setItem("highScoresEasy", JSON.stringify(highScoresEasy));
         window.localStorage.setItem("highScoresMedium", JSON.stringify(highScoresMedium));
         window.localStorage.setItem("highScoresHard", JSON.stringify(highScoresHard));
         window.localStorage.setItem("highScoresExtreme", JSON.stringify(highScoresExtreme));
+        this.saveRecentScores();
       },
 
       loadHighScores: function() {
@@ -965,7 +974,6 @@ angular.module('starter.services', [])
           highScoresExtreme = JSON.parse(window.localStorage.getItem("highScoresExtreme"));
         else
           highScoresExtreme = [];
-        console.log("---HSez: " + highScoresEasy);
       },
 
       clearHighScores: function () {
@@ -979,50 +987,105 @@ angular.module('starter.services', [])
       addScore: function(timeMin, timeSec) {
         // save with date and chrono.
         // genre de meme ->array.push([data,chrono])
-        var date = new Date();
-        var day = date.getDate();
-        var monthIndex = date.getMonth();
-        var year = date.getFullYear();
-
+        var savedDate = this.getStringedDate();
         var secTime = (parseInt(timeMin * 60) + parseInt(timeSec)).toString();
         var time = timeMin + ':' + timeSec;
-        var savedDate = day + ' ' + monthNames[monthIndex] + ' ' + year;
 
         if(difficulty == 'easy') {
           highScoresEasy.push([secTime, savedDate, time]);
-          highScoresEasy.sort();
+          highScoresEasy.sort(function(a,b){return a[0] -b[0]});
+          if(highScoresEasy.length >15) {
+            highScoresEasy.length -= 1;
+          }
         }
         else if(difficulty == 'medium')
         {
           highScoresMedium.push([secTime, savedDate, time]);
-          highScoresMedium.sort();
+          highScoresMedium.sort(function(a,b){return a[0] -b[0]});
+          if(highScoresEasy.length >15) {
+            highScoresEasy.length -= 1;
+          }
         }
         else if(difficulty == 'hard')
         {
           highScoresHard.push([secTime, savedDate, time]);
-          highScoresHard.sort();
+          highScoresHard.sort(function(a,b){return a[0] -b[0]});
+          if(highScoresEasy.length >15) {
+            highScoresEasy.length -= 1;
+          }
         }
         else if(difficulty == 'extreme')
         {
           highScoresExtreme.push([secTime, savedDate, time]);
-          highScoresExtreme.sort();
+          highScoresExtreme.sort(function(a,b){return a[0] -b[0]});
+          if(highScoresEasy.length >15) {
+            highScoresEasy.length -= 1;
+          }
+        }
+        recentScores.unshift([savedDate, time, difficulty]);
+        if(recentScores.length >15) {
+          recentScores.length -= 1;
         }
       },
 
-      getEasyScores: function () {
-        return highScoresEasy;
+      parseArrayToStringHS: function (array) {
+        var stringedArray ='';
+        for(var i = 0; i < array.length; i++) {
+          if(i<9) {
+            stringedArray +=  i+1 + '.         ' + array[i][1] + '        ' + array[i][2] + "\n";
+          }
+          else {
+            stringedArray +=  i+1 + '.        ' + array[i][1] + '        ' + array[i][2] + "\n";
+          }
+        }
+        return stringedArray;
       },
 
-      getMediumScores: function () {
-        return highScoresMedium;
+      parseArrayToStringRM: function (array) {
+        var stringedArray ='';
+        for(var i = 0; i < array.length; i++) {
+            stringedArray +=  array[i][2] + '         ' + array[i][0] + '        ' + array[i][1] + "\n";
+        }
+        return stringedArray;
       },
 
-      getHardScores: function () {
-        return highScoresHard;
+      updateScore: function ($scope) {
+        console.log('---stats: update scores---');
+        this.loadHighScores();
+        $scope.easyHighScores = highScoresEasy;
+        $scope.mediumHighScores = highScoresMedium;
+        $scope.hardHighScores = highScoresHard;
+        $scope.extremeHighScores = highScoresExtreme;
       },
 
-      getExtremeScores: function () {
-        return highScoresExtreme;
+      saveRecentScores: function() {
+        window.localStorage.setItem("recentScores", JSON.stringify(recentScores));
+      },
+
+      loadRecentScores: function() {
+        if(window.localStorage.getItem("recentScores")!=undefined)
+          recentScores = JSON.parse(window.localStorage.getItem("recentScores"));
+        else
+          recentScores = [];
+      },
+
+      updateRecentScores: function ($scope) {
+        console.log('---stats: update scores---');
+        this.loadRecentScores();
+        $scope.recentScores = recentScores;
+      },
+
+      getStringedDate: function () {
+        var date = new Date();
+        var day = date.getDate().toString();
+        if(day.length == 1) {
+          day = '0'+ day;
+        }
+        var monthIndex = date.getMonth();
+        var year = date.getFullYear();
+
+        var stringedDate = day + ' ' + monthNames[monthIndex] + ' ' + year;
+        return stringedDate;
       }
     };
   })

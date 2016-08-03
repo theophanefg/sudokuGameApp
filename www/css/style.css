@@ -1,7 +1,6 @@
 /* Empty. Add your own CSS if you like */
 
-/* Style the list */
-ul.tab {
+ul.stats-tab {
   list-style-type: none;
   margin: 0;
   padding: 0;
@@ -11,39 +10,120 @@ ul.tab {
 }
 
 /* Float the list items side by side */
-ul.tab li {float: left;}
+.stats-tab li {
+  float: left;
+  width: 50%;
+  display: inline;
+}
 
 /* Style the links inside the list items */
-ul.tab li a {
-  display: inline-block;
+.stats-tab li a {
+  width: 100%;
+  height: 100%;
   color: black;
   text-align: center;
-  padding: 14px 16px;
+  padding: 14px 0;
   text-decoration: none;
   transition: 0.3s;
   font-size: 15px;
+  display: inline-block;
 }
 
 /* Change background color of links on hover */
-ul.tab li a:hover {background-color: #ddd;}
-
-.active-tab {background-color: #ccc;}
-
-.highscores {
-
+ul.stats-tab li a:hover {
+  background-color: #ddd;
+  cursor: pointer;
 }
 
-/* Style the tab content */
-.tabcontent {
+.stats-tabcontent {
   display: none;
   margin-top: -20px;
   padding: 3px;
   border: 1px solid #ccc;
   border-top: none;
+  height: 80%;
+
 }
 
-.tab-container {
-  width: 300px;
+.stats-tab-container {
+  width: 100%;
+}
+
+/* Style the list */
+
+
+ul.hs-tab {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+}
+
+/* Float the list items side by side */
+ul.hs-tab li {
+  float: left;
+  width: 25%;
+}
+
+/* Style the links inside the list items */
+ul.hs-tab li a {
+  display: block;
+  color: black;
+  text-align: center;
+  padding: 14px 5%;
+  text-decoration: none;
+  transition: 0.3s;
+  font-size: 15px;
+  height: 100%;
+  width: 100%;
+}
+
+/* Change background color of links on hover */
+ul.hs-tab li a:hover {
+  background-color: #ddd;
+  cursor: pointer;
+}
+
+.hs-data {
+  display: inline-block;
+  width: 32%;
+}
+
+.mh-data {
+  display: inline-block;
+  width: 30%;
+}
+
+.mh-tabcontent {
+  display: inline;
+  padding: 3px;
+  border-top: none;
+  height: 80%;
+  width: 100%;
+}
+
+.active-tab {
+  background-color: #ccc;
+  cursor: pointer;
+}
+
+.highscores {
+  display: inline-block;
+  width: 100%;
+}
+
+/* Style the tab content */
+.hs-tabcontent {
+  padding: 3px;
+  border: 1px solid #ccc;
+  border-top: none;
+  height: 80%;
+}
+
+.hs-tab-container {
+  width: 100%;
 }
 
 .background {
@@ -56,16 +136,16 @@ ul.tab li a:hover {background-color: #ddd;}
 .score-tab{
   position: absolute;
   top: 50%;
-  margin-top: -150px;
+  margin-top: -40%;
   left:50%;
   margin-left: -160px;
   width: 320px !important;
-  height: 300px;
+  height: 83%;
 }
 
 .score-tab-body{
   width: 321px ;
-  height: 300px;
+  height: 80%;
 }
 
 .tab{
@@ -162,47 +242,47 @@ ul.tab li a:hover {background-color: #ddd;}
 .notePos1 {
   position: relative;
   top: 0px;
-  left: 13px;
+  left: 38%;
 }
 
 .notePos2 {
   position: relative;
   top: 0px;
-  left: 25px;
+  left: 76%;
 }
 
 .notePos3 {
   position: relative;
-  top: 13px;
+  top: 38%;
   left: 0px;
 }
 
 .notePos4 {
   position: relative;
-  top: 13px;
-  left: 13px;
+  top: 38%;
+  left: 38%;
 }
 
 .notePos5 {
   position: relative;
-  top: 13px;
-  left: 25px;
+  top: 38%;
+  left: 76%;
 }
 
 .notePos6 {
   position: relative;
-  top: 25px;
+  top: 76%;
   left: 0px;
 }
 
 .notePos7 {
   position: relative;
-  top: 25px;
-  left: 13px;
+  top: 76%;
+  left: 38%;
 }
 
 .notePos8 {
   position: relative;
-  top: 25px;
-  left: 25px;
+  top: 76%;
+  left: 76%;
 }

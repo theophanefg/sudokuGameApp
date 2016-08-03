@@ -1,0 +1,66 @@
+
+
+
+<ion-view view-title="Stats">
+  <ion-content class="background">
+    <div class="stats-tab-container">
+      <ul class="stats-tab">
+        <li><a id="stats-tab-hs" class="stats-tablinks" ng-click="openTab('hs')">High Score</a></li>
+        <li><a id="stats-tab-mh" class="stats-tablinks" ng-click="openTab('mh')">Match History</a></li>
+        <div id = "stats-hs" class="hs-tab-container stats-tabcontent">
+          <ul class="hs-tab">
+            <li><a id="stats-hs-tab-easy" class="hs-tablinks" ng-click="openScoreTab('easy')">Easy</a></li>
+            <li><a id="stats-hs-tab-medium" class="hs-tablinks" ng-click="openScoreTab('medium')">Medium</a></li>
+            <li><a id="stats-hs-tab-hard" class="hs-tablinks" ng-click="openScoreTab('hard')">Hard</a></li>
+            <li><a id="stats-hs-tab-extreme" class="hs-tablinks" ng-click="openScoreTab('extreme')">Extreme</a></li>
+          </ul>
+            <div id="stats-hs-easy" class="hs-tabcontent">
+              <div class="highscores" ng-repeat="x in easyHighScores track by $index">
+                <div class="hs-data">{{$index + 1}}</div>
+                <div class="hs-data">{{x[1]}}</div>
+                <div class="hs-data">{{x[2]}}</div>
+              </div>
+            </div>
+            <div id="stats-hs-medium" class="hs-tabcontent">
+              <div class="highscores" ng-repeat="x in mediumHighScores track by $index">
+                <div class="hs-data">{{$index + 1}}</div>
+                <div class="hs-data">{{x[1]}}</div>
+                <div class="hs-data">{{x[2]}}</div>
+              </div>
+            </div>
+            <div id="stats-hs-hard" class="hs-tabcontent">
+              <div class="highscores" ng-repeat="x in hardHighScores track by $index">
+                <div class="hs-data">{{$index + 1}}</div>
+                <div class="hs-data">{{x[1]}}</div>
+                <div class="hs-data">{{x[2]}}</div>
+              </div>
+            </div>
+            <div id="stats-hs-extreme" class="hs-tabcontent">
+              <div class="highscores" ng-repeat="x in extremeHighScores track by $index">
+                <div class="hs-data">{{$index + 1}}</div>
+                <div class="hs-data">{{x[1]}}</div>
+                <div class="hs-data">{{x[2]}}</div>
+              </div>
+            </div>
+        </div>
+
+
+      </ul>
+    </div>
+    <div class="mh-tabcontent">
+      <div id = "stats-mh" class="hs-tab-container stats-tabcontent">
+        <div class="highscores" ng-repeat="x in recentScores track by $index">
+          <div class="mh-data">{{x[2]}}</div>
+          <div class="mh-data">{{x[0]}}</div>
+          <div class="mh-data">{{x[1]}}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class = "row">
+      <button ng-click="clearHighScores()"> Clear high scores</button>
+    </div>
+  </ion-content>
+</ion-view>
+
+

@@ -211,32 +211,65 @@ angular.module('starter.controllers', [])
   function finishGame() {
     $interval.cancel(savingRoutine);
     Stats.loadHighScores();
+    Stats.loadRecentScores();
     Stats.addScore(Grid.getTimerMin(), Grid.getTimerSec());
     Stats.saveHighScores();
     Grid.clearGame();
-    Grid.saveScoreOnline();
     //display highscores
-    var endGamePopup = $ionicPopup.show({
-      templateUrl: 'templates/tab-score.html',
-      title: 'Congratulation, you completed a grid!',
-      buttons: [
-        {text: 'Ok',
-          onTap: function(e) {
-            $state.go("tab.play-menu-difficulty");
-          }
-        },
-        {text: 'Clear highscores',
+    if (Grid.getGameMode() == 0) {
+      var endGamePopup = $ionicPopup.show({
+        templateUrl: 'templates/tab-score.html',
+        title: 'Congratulation, you completed a grid!',
+        buttons: [
+          {text: 'Ok',
+            onTap: function(e) {
+              $state.go("tab.play-menu-difficulty");
+            }
+          },
+          {text: 'Clear highscores',
             onTap: function(e) {
               Stats.clearHighScores();
             }
-        }
-      ]
-    });
+          }
+        ]
+      });
+
+      var popupBox = document.getElementsByClassName('popup')[0];
+      popupBox.className += ' score-tab';
+      var popupBoxBody = document.getElementsByClassName('popup-body')[0];
+      popupBoxBody.className += ' score-tab-body';
+    }
+    else if (Grid.getGameMode() == 1) {
+
+      var winningStatus = Grid.saveScoreOnline();
+      var paragraph = '';
+      if (winningStatus == 1) {
+        paragraph = 'You won!';
+      } else if (winningStatus == 2) {
+        paragraph = 'You lost!';
+      } else if (winningStatus == 3) {
+        paragraph = 'Game is not over yet, check the social tab for results!';
+      }
+      var onlineEndGamePopup = $ionicPopup.show({
+        templateUrl: 'templates/tab-score.html',
+        title: 'Congratulation, you completed an online grid!',
+        subTitle: paragraph,
+        buttons: [
+          {text: 'Ok',
+            onTap: function(e) {
+              $state.go("tab.play-menu-difficulty");
+            }
+          },
+          {text: 'Clear highscores',
+            onTap: function(e) {
+              Stats.clearHighScores();
+            }
+          }
+        ]
+      });
+    }
+
     $interval.cancel(savingRoutine);
-    var popupBox = document.getElementsByClassName('popup')[0];
-    popupBox.className += ' score-tab';
-    var popupBoxBody = document.getElementsByClassName('popup-body')[0];
-    popupBoxBody.className += ' score-tab-body';
 
   }
 
@@ -384,6 +417,28 @@ angular.module('starter.controllers', [])
 .controller('GameModeCtrl', function($scope, Grid) {
   Grid.initializeSettings();
 
+  $scope.clearLocalOnlineGames = function() {
+    window.localStorage.removeItem("grid1v1easy");
+    window.localStorage.removeItem("initGrid1v1easy");
+    window.localStorage.removeItem("solGrid1v1easy");
+    window.localStorage.removeItem("matchId1v1easy");
+
+    window.localStorage.removeItem("grid1v1medium");
+    window.localStorage.removeItem("initGrid1v1medium");
+    window.localStorage.removeItem("solGrid1v1medium");
+    window.localStorage.removeItem("matchId1v1medium");
+
+    window.localStorage.removeItem("grid1v1hard");
+    window.localStorage.removeItem("initGrid1v1hard");
+    window.localStorage.removeItem("solGrid1v1hard");
+    window.localStorage.removeItem("matchId1v1hard");
+
+    window.localStorage.removeItem("grid1v1extreme");
+    window.localStorage.removeItem("initGrid1v1extreme");
+    window.localStorage.removeItem("solGrid1v1extreme");
+    window.localStorage.removeItem("matchId1v1extreme");
+  };
+
   $scope.playSolo = function() {
     Grid.setGameMode(0);
   };
@@ -450,61 +505,117 @@ angular.module('starter.controllers', [])
   //
   //$scope.$on('$ionicView.enter', function(e) {
   //});
-  var easyHighScores;
-  var mediumHighScores;
-  var hardHighScores;
-  var extremeHighScores;
-  initializeScoreStrings();
-
-  $scope.easyHighScores = easyHighScores;
-  $scope.mediumHighScores = mediumHighScores;
-  $scope.hardHighScores = hardHighScores;
-  $scope.extremeHighScores = extremeHighScores;
+  console.log("jentre dans le controller scoreTabCtrl");
+  Stats.updateScore($scope);
+  $scope.$on('$ionicView.enter', function(e) {
+    console.log("je suis dans levent ionicView.enter");
+    Stats.updateScore($scope);
+  });
   $scope.openScoreTab = function (difficulty) {
+    console.log("je suis dans $scope.openScoreTab");
     openScoreTab(difficulty);
+    Stats.updateScore($scope);
   };
   openScoreTab(Stats.getDifficulty());
 
   function openScoreTab(difficulty) {
-    console.log("---openScoreTab---");
+    console.log("---scoreTabCtrl:openScoreTab---");
     // Declare all variables
     var i, tabcontent, tablinks;
 
     // Get all elements with class="tabcontent" and hide them
-    tabcontent = document.getElementsByClassName("tabcontent");
+    tabcontent = document.getElementsByClassName("hs-tabcontent");
     for (i = 0; i < tabcontent.length; i++) {
       tabcontent[i].style.display = "none";
     }
     // Get all elements with class="tablinks" and remove the class "active"
-    tablinks = document.getElementsByClassName("tablinks");
+    tablinks = document.getElementsByClassName("hs-tablinks");
     for (i = 0; i < tablinks.length; i++) {
-     tablinks[i].className = tablinks[i].className.replace(" active-tab", "");
-     }
+      tablinks[i].className = tablinks[i].className.replace(" active-tab", "");
+      console.log(tablinks[i].className);
+    }
 
     // Show the current tab, and add an "active" class to the link that opened the tab
-    document.getElementById(difficulty).style.display = "block";
-    document.getElementById("tab-"+difficulty).className += " active-tab";
+    console.log('id de lelement donc on doit changer laffichage: ' + 'hs-' + difficulty);
+    document.getElementById('hs-' + difficulty).style.display = "block";
+    document.getElementById("hs-tab-"+difficulty).className += " active-tab";
   }
 
-  function initializeScoreStrings() {
-    console.log("---initilize score strings");
-    easyHighScores = parseArrayToString(Stats.getEasyScores());
-    mediumHighScores = parseArrayToString(Stats.getMediumScores());
-    hardHighScores = parseArrayToString(Stats.getHardScores());
-    extremeHighScores = parseArrayToString(Stats.getExtremeScores());
-  }
 
-  function parseArrayToString(array) {
-    //console.log("---parse array");
-    var stringedArray ='';
-    for(var i = 0; i < array.length; i++) {
-      stringedArray += array[i][1] + '     ' + array[i][2] + "\n";
+})
+
+.controller('StatsCtrl', function($scope, Stats) {
+  // With the new view caching in Ionic, Controllers are only called
+  // when they are recreated or on app start, instead of every page change.
+  // To listen for when this page is active (for example, to refresh data),
+  // listen for the $ionicView.enter event:
+  //
+  //$scope.$on('$ionicView.enter', function(e) {
+  //});
+  console.log("statsCtrl");
+  $scope.$on('$ionicView.enter', function(e) {
+    Stats.updateScore($scope);
+    Stats.updateRecentScores($scope);
+  });
+
+  $scope.openTab= function(id) {
+    openTab(id);
+  };
+  openTab('hs');
+
+  $scope.openScoreTab = function (difficulty) {
+    openScoreTab(difficulty);
+  };
+  openScoreTab('easy');
+
+
+  $scope.clearHighScores = function() {
+    Stats.clearHighScores();
+    Stats.updateScore($scope);
+  };
+
+  function openTab(id) { // hs = high scores, mh = match history
+    // Declare all variables
+    var i, tabcontent, tablinks;
+
+    // Get all elements with class="tabcontent" and hide them
+    tabcontent = document.getElementsByClassName("stats-tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+      tabcontent[i].style.display = "none";
     }
-    return stringedArray;
+    // Get all elements with class="tablinks" and remove the class "active"
+    tablinks = document.getElementsByClassName("stats-tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+      tablinks[i].className = tablinks[i].className.replace(" active-tab", "");
+      console.log(tablinks[i].className);
+    }
 
+    // Show the current tab, and add an "active" class to the link that opened the tab
+    document.getElementById('stats-' + id).style.display = "block";
+    document.getElementById("stats-tab-"+id).className += " active-tab";
   }
 
+  function openScoreTab(difficulty) {
+    console.log("---statsCtrl:openScoreTab---");
+    // Declare all variables
+    var i, tabcontent, tablinks;
 
+    // Get all elements with class="tabcontent" and hide them
+    tabcontent = document.getElementsByClassName("hs-tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+      tabcontent[i].style.display = "none";
+    }
+    // Get all elements with class="tablinks" and remove the class "active"
+    tablinks = document.getElementsByClassName("hs-tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+      tablinks[i].className = tablinks[i].className.replace(" active-tab", "");
+      console.log(tablinks[i].className);
+    }
+
+    // Show the current tab, and add an "active" class to the link that opened the tab
+    document.getElementById('stats-hs-' + difficulty).style.display = "block";
+    document.getElementById("stats-hs-tab-"+difficulty).className += " active-tab";
+  }
 })
 
 .controller('ChatsCtrl', function($scope, Chats) {
