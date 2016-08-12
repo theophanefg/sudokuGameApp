@@ -9,6 +9,8 @@ angular.module('starter.services', [])
   /**
    * This is the grid displayed in the play tab of the app, the one the user can modify
    * It's a 2 dimensional array(9*9), containing numbers from 1 to 9, or spaces, which represent empty cells.
+   *
+   * @type: array
    */
   var grid;
 
@@ -16,18 +18,24 @@ angular.module('starter.services', [])
    * This is the grid as it was in the beginning, its used to color the initial numbers and to stop
    * the user from modifiying these numbers
    * It's a 2 dimensional array(9*9), containing numbers from 1 to 9, or spaces, which represent empty cells.
+   *
+   * @type: array
    */
   var initGrid;
 
   /**
    * This is the solution to the current grid. It is used to verify is the user completed the grid
    * It's a 2 dimensional array(9*9), containing numbers from 1 to 9.
+   *
+   * @type: array
    */
   var solGrid;
 
   /**
    * This array contains 10 stringed easy grids. Each row is the base grid (first 81 numbers), and then
    * the solution (the following 81 numbers)
+   *
+   * @type: array
    */
   var easyGrids = [
     '070102090302860007004009560405000026020030080910000704061200300700083201050401070576142893392865417184379562435718926627934185918526734861257349749683251253491678',
@@ -45,6 +53,8 @@ angular.module('starter.services', [])
   /**
    * This array contains 10 stringed medium grids. Each row is the base grid (first 81 numbers), and then
    * the solution (the following 81 numbers)
+   *
+   * @type: array
    */
   var mediumGrids = [
     '000609002007000105000507030006031250003050700028740900060405000704000300800103000135689472687324195249517638976831254413952786528746913361475829754298361892163547',
@@ -62,6 +72,8 @@ angular.module('starter.services', [])
   /**
    * This array contains 10 stringed hard grids. Each row is the base grid (first 81 numbers), and then
    * the solution (the following 81 numbers)
+   *
+   * @type: array
    */
   var hardGrids = [
     '000012040050006108000980600001029000500468007000170400007051000305800090020690000876544449954736128213984675741329586532468917689175432497251863365847291128693754',
@@ -79,6 +91,8 @@ angular.module('starter.services', [])
   /**
    * This array contains 10 stringed extreme grids. Each row is the base grid (first 81 numbers), and then
    * the solution (the following 81 numbers)
+   *
+   * @type: array
    */
   var extremeGrids = [
     '060700000700100068001540070006030090900601005070050300090014700510007004000005020265789431749123568381546972156438297923671845874952316698214753512397684437865129',
@@ -98,6 +112,8 @@ angular.module('starter.services', [])
    * For instance, if there is a 5 at the position [3,3], and you try to put another five
    * in the same row, let's say at the position [3,5], this variable will take the value
    * [3,3], and it will be used to change the color of the corresponding cell in the displayed grid.
+   *
+   * @type: array
    */
   var errorSource = [-1,-1];
 
@@ -107,6 +123,8 @@ angular.module('starter.services', [])
    *  0 for the solo mode, in which you play alone,
    *  1 for the 1v1 mode, in which you compete against an adversary, online,
    *  2 for the coop mode, in which you work with someone else to complete a grid, also online ( and which is yet to be implemented)
+   *
+   * @type: int
    */
   var gameMode;
 
@@ -116,6 +134,8 @@ angular.module('starter.services', [])
    *  0 for cell first: you first select a cell, then press the number(s) you want to put in that cell
    *  1 for number first: you first select a number, then press the case(s) you want to put that number in
    * Default is cell first.
+   *
+   * @type: int
    */
   var playMode = 0;
 
@@ -128,29 +148,99 @@ angular.module('starter.services', [])
    *               for each possible value (1-9). You cant put a note in a case in which there is already a number,
    *               unless you first erase that number. Re-adding the same note to a case will toggle the said note.
    * Default entry mode is numbers.
+   *
+   * @type: int
    */
   var entryMode = 0;
 
-
-  var numberBuffer = '1';
-  var caseBuffer = [0,0];
-  var difficulty = 'easy';
-  var timerMin;
-  var timerSec;
-  var enableFriends = true;
-  var enableErrorDetection = true;
-  var enableNoteAutoErasing = true;
-  var enableNumberHighlighting = true;
-  var apiAddress = "http://rest-api-sudoku-app.local.humanequation.co/api";
-  var matchId; // used for online 1v1 game mode
-  var playerId = 4444;
-  return {
-    /**
-   * Adds two numbers
-   * @param {Number} a 
-   * @param {Number} b
-   * @return {Number} sum
+  /**
+   * This string holds the value of the currently selected number.
+   * It's value is between 1 and 9 for a regular number, and is of 0 
+   * if the erase option is selected
+   *
+   * @type: string
    */
+  var numberBuffer = '1';
+
+  /**
+   * This array holds the value of the currently selected case. Its indexes
+   * are from 0 to 8, to cover all the cases of the grid
+   *
+   * @type: array
+   */
+  var caseBuffer = [0,0];
+
+  /**
+   * This string holds the value of the current difficulty of the grid. It is mainly used
+   * for grid generation.
+   *
+   * @type: string
+   */
+  var difficulty = 'easy';
+
+  /**
+   * This int contains the minute part of the timer of the current game.
+   *
+   * @type: int
+   */
+  var timerMin;
+
+  /**
+   * This int contains the seconds part of the timer of the current game.
+   *
+   * @type: int
+   */
+  var timerSec;
+
+  /**
+   * This boolean value indicates if the error detection feature is enabled.
+   *
+   * @type: bool
+   */
+  var enableErrorDetection = true;
+
+  /**
+   * This boolean value indicates if the notes are automaticly erased as
+   * numbers are added to the grid.
+   *
+   * @type: bool
+   */
+  var enableNoteAutoErasing = true;
+
+  /**
+   * This boolean value indicates if the cases with the same value as the currently
+   * selected number will be highligthed.
+   *
+   * @type: bool
+   */
+  var enableNumberHighlighting = true;
+
+  /**
+   * This string is the adress of the api querried in the online mode related functions.
+   *
+   * @type: string
+   */
+  var apiAddress = "http://rest-api-sudoku-app.local.humanequation.co/api";
+
+  /**
+   * This int holds the value of the current 1v1 online match.
+   *
+   * @type: int
+   */
+  var matchId; // used for online 1v1 game mode
+
+  /**
+   * This int holds the value of the player's ID, which is used for online matches.
+   *
+   * @type: int
+   */
+  var playerId = 4444;
+
+  return {
+    
+    //*************************************************************
+    //************************ ACCESSORS **************************
+    //*************************************************************
     getGrid: function(){
       return grid;
     },
@@ -933,10 +1023,6 @@ angular.module('starter.services', [])
       if (window.localStorage.getItem("enableNumberHighlighting") != undefined) {
         enableNumberHighlighting = JSON.parse(window.localStorage.getItem("enableNumberHighlighting"));
       }
-    },
-
-    getEnableFriends: function() {
-      return enableFriends;
     },
 
     getEnableErrorDetection: function() {
