@@ -6,6 +6,7 @@ angular.module('starter.controllers', [])
   var selectedColor = '#5bd75b';
   var defaultColor = 'white';
   var errorColor = 'lightcoral';
+  var savingRoutine;
 
   var timerMin = Grid.getTimerMin();
   var timerSec = Grid.getTimerSec();
@@ -21,15 +22,22 @@ angular.module('starter.controllers', [])
   updateGridColorByCase(Grid.getCaseBuffer()[0], Grid.getCaseBuffer()[1]);
   //testJS();
 
-  var savingRoutine = $interval(function(){
-    if($ionicHistory.currentView().stateName != 'tab.play') {
-      $interval.cancel(savingRoutine);
-      return;
+  
+
+  $scope.$on('$ionicView.enter', function(e) {
+    savingRoutine = $interval(function(){
+      if($ionicHistory.currentView().stateName != 'tab.play') {
+        $interval.cancel(savingRoutine);
+        return;
+      }
+      Grid.incrementTime();
+      Grid.saveGame();
+      updateTitle();
+    }, 1000);
+    if(Grid.getGameMode() == 1) {
+     Grid.loadTimers1v1();
     }
-    Grid.incrementTime();
-    Grid.saveGame();
-    updateTitle();
-  }, 1000);
+  });
 
   $scope.updateGrid = function() {
     updateGrid();
@@ -47,6 +55,30 @@ angular.module('starter.controllers', [])
   $scope.changeEntryMode = function() {
     Grid.switchEntryMode();
     updateEntryMode();
+  };
+
+  $scope.forfeitMatch = function() {
+    var confirmPopup = $ionicPopup.confirm({
+     // templateUrl: 'templates/tab-score.html',
+      title: 'Forfeit match',
+      subTitle: 'Are you sure you want to forfeit this match?',
+      buttons: [
+        {
+          text: 'No'
+        },
+        {text: 'Yes',
+          onTap: function(e) {
+            $state.go("tab.play-menu-difficulty");
+            forfeitMatch();
+          }
+        }        
+      ]
+    });
+/*
+    var popupBox = document.getElementsByClassName('popup')[0];
+    popupBox.className += ' score-tab';
+    var popupBoxBody = document.getElementsByClassName('popup-body')[0];
+    popupBoxBody.className += ' score-tab-body';*/
   };
 
   $scope.casePressed = function (rowIndex, colIndex) {
@@ -207,6 +239,12 @@ angular.module('starter.controllers', [])
     }
   }
 
+  function forfeitMatch() {
+    console.log("---forfeitMatch yo");
+    $interval.cancel(savingRoutine);
+    Grid.forfeitMatch();    
+  }
+
   // sequence when the grid is completed
   function finishGame() {
     $interval.cancel(savingRoutine);
@@ -225,11 +263,6 @@ angular.module('starter.controllers', [])
             onTap: function(e) {
               $state.go("tab.play-menu-difficulty");
             }
-          },
-          {text: 'Clear highscores',
-            onTap: function(e) {
-              Stats.clearHighScores();
-            }
           }
         ]
       });
@@ -240,7 +273,7 @@ angular.module('starter.controllers', [])
       popupBoxBody.className += ' score-tab-body';
     }
     else if (Grid.getGameMode() == 1) {
-
+      console.log ("saveScoreOnline ?");
       var winningStatus = Grid.saveScoreOnline();
       var paragraph = '';
       if (winningStatus == 1) {
@@ -248,7 +281,9 @@ angular.module('starter.controllers', [])
       } else if (winningStatus == 2) {
         paragraph = 'You lost!';
       } else if (winningStatus == 3) {
-        paragraph = 'Game is not over yet, check the social tab for results!';
+        paragraph = 'Game is not over yet, check the stats tab for results!';
+      } else if (winningStatus == 4) {
+        paragraph = "It's a tie!";
       }
       var onlineEndGamePopup = $ionicPopup.show({
         templateUrl: 'templates/tab-score.html',
@@ -259,14 +294,14 @@ angular.module('starter.controllers', [])
             onTap: function(e) {
               $state.go("tab.play-menu-difficulty");
             }
-          },
-          {text: 'Clear highscores',
-            onTap: function(e) {
-              Stats.clearHighScores();
-            }
           }
         ]
       });
+
+      var popupBox = document.getElementsByClassName('popup')[0];
+      popupBox.className += ' score-tab';
+      var popupBoxBody = document.getElementsByClassName('popup-body')[0];
+      popupBoxBody.className += ' score-tab-body';
     }
 
     $interval.cancel(savingRoutine);
@@ -414,7 +449,7 @@ angular.module('starter.controllers', [])
 })
 
 
-.controller('GameModeCtrl', function($scope, Grid) {
+.controller('GameModeCtrl', function($scope, Grid, Stats) {
   Grid.initializeSettings();
 
   $scope.clearLocalOnlineGames = function() {
@@ -441,10 +476,12 @@ angular.module('starter.controllers', [])
 
   $scope.playSolo = function() {
     Grid.setGameMode(0);
+    Stats.setGameMode(0);
   };
 
   $scope.play1v1 = function () {
     Grid.setGameMode(1);
+    Stats.setGameMode(1);
   };
 })
 
@@ -457,6 +494,7 @@ angular.module('starter.controllers', [])
     console.log("---play---");
     Stats.setDifficulty(difficulty);
     Grid.setDifficulty(difficulty);
+    console.log(" machin " + window.localStorage.getItem('grid1v1'+difficulty));
     if(gameMode == 0 && window.localStorage.getItem("gridSolo"+difficulty) != undefined) {
       var choicePopup = $ionicPopup.show({
         title: 'You have a game in progress.',
@@ -469,9 +507,11 @@ angular.module('starter.controllers', [])
     }
     else if (gameMode == 1 && window.localStorage.getItem("grid1v1"+difficulty) != undefined) {
       resumeGame();
+      console.log("---$scope.play: resumeGame triggered---");
     }
     else {
       startNewGame();
+      console.log("---$scope.play: startNewGame triggered---");
     }
 
   };
@@ -553,20 +593,21 @@ angular.module('starter.controllers', [])
   //$scope.$on('$ionicView.enter', function(e) {
   //});
   console.log("statsCtrl");
-  $scope.$on('$ionicView.enter', function(e) {
+  $scope.$on('$ionicView.enter', function(e) {  
+    openTab('hs');
+    openScoreTab('easy');
     Stats.updateScore($scope);
-    Stats.updateRecentScores($scope);
+    Stats.updateRecentScores($scope); 
+    Stats.updateOnlineResults($scope); 
   });
 
   $scope.openTab= function(id) {
     openTab(id);
   };
-  openTab('hs');
 
   $scope.openScoreTab = function (difficulty) {
     openScoreTab(difficulty);
   };
-  openScoreTab('easy');
 
 
   $scope.clearHighScores = function() {
@@ -574,7 +615,17 @@ angular.module('starter.controllers', [])
     Stats.updateScore($scope);
   };
 
-  function openTab(id) { // hs = high scores, mh = match history
+  $scope.clearRecentScores = function() {
+    Stats.clearRecentScores();
+    Stats.updateRecentScores($scope);
+  };
+
+  $scope.clearOnlineResults = function() {
+    Stats.clearOnlineResults();
+    Stats.updateOnlineResults($scope);
+  };
+
+  function openTab(id) { // hs = high scores, mh = match history, rr = recent results
     // Declare all variables
     var i, tabcontent, tablinks;
 
@@ -591,7 +642,7 @@ angular.module('starter.controllers', [])
     }
 
     // Show the current tab, and add an "active" class to the link that opened the tab
-    document.getElementById('stats-' + id).style.display = "block";
+    document.getElementById('stats-' + id).style.display = "inline-block";
     document.getElementById("stats-tab-"+id).className += " active-tab";
   }
 
@@ -614,6 +665,7 @@ angular.module('starter.controllers', [])
 
     // Show the current tab, and add an "active" class to the link that opened the tab
     document.getElementById('stats-hs-' + difficulty).style.display = "block";
+    document.getElementById('hs-header-block').style.display = "block";
     document.getElementById("stats-hs-tab-"+difficulty).className += " active-tab";
   }
 })

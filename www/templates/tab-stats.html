@@ -5,8 +5,9 @@
   <ion-content class="background">
     <div class="stats-tab-container">
       <ul class="stats-tab">
-        <li><a id="stats-tab-hs" class="stats-tablinks" ng-click="openTab('hs')">High Score</a></li>
-        <li><a id="stats-tab-mh" class="stats-tablinks" ng-click="openTab('mh')">Match History</a></li>
+        <li><a id="stats-tab-hs" class="stats-tablinks stats-tab-hs" ng-click="openTab('hs')">High Score</a></li>
+        <li><a id="stats-tab-mh" class="stats-tablinks stats-tab-mh" ng-click="openTab('mh')">Recent Matches</a></li>
+        <li><a id="stats-tab-rr" class="stats-tablinks stats-tab-rr" ng-click="openTab('rr')">Results</a></li>
         <div id = "stats-hs" class="hs-tab-container stats-tabcontent">
           <ul class="hs-tab">
             <li><a id="stats-hs-tab-easy" class="hs-tablinks" ng-click="openScoreTab('easy')">Easy</a></li>
@@ -14,52 +15,116 @@
             <li><a id="stats-hs-tab-hard" class="hs-tablinks" ng-click="openScoreTab('hard')">Hard</a></li>
             <li><a id="stats-hs-tab-extreme" class="hs-tablinks" ng-click="openScoreTab('extreme')">Extreme</a></li>
           </ul>
-            <div id="stats-hs-easy" class="hs-tabcontent">
+            <div id = "hs-header-block" class="hs-header-content hs-tabcontent">
+              <div class="hs-header">
+                <div class="hs-data hs-data-left">No.</div>
+                <div class="hs-data hs-data-mid-left">Mode</div>
+                <div class="hs-data hs-data-mid-right">Date</div>
+                <div class="hs-data hs-data-right">Time</div>
+              </div>                
+            </div>
+            <div id="stats-hs-easy" class="hs-tabcontent">                              
               <div class="highscores" ng-repeat="x in easyHighScores track by $index">
-                <div class="hs-data">{{$index + 1}}</div>
-                <div class="hs-data">{{x[1]}}</div>
-                <div class="hs-data">{{x[2]}}</div>
+                <div class="hs-data hs-data-left">{{$index + 1}}</div>
+                <div class="hs-data hs-data-mid-left">{{x[3]}}</div>
+                <div class="hs-data hs-data-mid-right">{{x[1]}}</div>
+                <div class="hs-data hs-data-right">{{x[2]}}</div>
               </div>
             </div>
             <div id="stats-hs-medium" class="hs-tabcontent">
               <div class="highscores" ng-repeat="x in mediumHighScores track by $index">
-                <div class="hs-data">{{$index + 1}}</div>
-                <div class="hs-data">{{x[1]}}</div>
-                <div class="hs-data">{{x[2]}}</div>
+                <div class="hs-data hs-data-left">{{$index + 1}}</div>
+                <div class="hs-data hs-data-mid-left">{{x[3]}}</div>
+                <div class="hs-data hs-data-mid-right">{{x[1]}}</div>
+                <div class="hs-data hs-data-right">{{x[2]}}</div>
               </div>
             </div>
             <div id="stats-hs-hard" class="hs-tabcontent">
               <div class="highscores" ng-repeat="x in hardHighScores track by $index">
-                <div class="hs-data">{{$index + 1}}</div>
-                <div class="hs-data">{{x[1]}}</div>
-                <div class="hs-data">{{x[2]}}</div>
+                <div class="hs-data hs-data-left">{{$index + 1}}</div>
+                <div class="hs-data hs-data-mid-left">{{x[3]}}</div>
+                <div class="hs-data hs-data-mid-right">{{x[1]}}</div>
+                <div class="hs-data hs-data-right">{{x[2]}}</div>
               </div>
             </div>
             <div id="stats-hs-extreme" class="hs-tabcontent">
               <div class="highscores" ng-repeat="x in extremeHighScores track by $index">
-                <div class="hs-data">{{$index + 1}}</div>
-                <div class="hs-data">{{x[1]}}</div>
-                <div class="hs-data">{{x[2]}}</div>
+                <div class="hs-data hs-data-left">{{$index + 1}}</div>
+                <div class="hs-data hs-data-mid-left">{{x[3]}}</div>
+                <div class="hs-data hs-data-mid-right">{{x[1]}}</div>
+                <div class="hs-data hs-data-right">{{x[2]}}</div>
               </div>
             </div>
+            <div class = "row">
+              <button ng-click="clearHighScores()"> Clear high scores</button>
+            </div>
         </div>
-
-
+        <div id = "stats-mh" class="hs-tab-container stats-tabcontent">
+          <div id = "hs-header-block" class="hs-header-content mh-tabcontent">
+            <div class="hs-header">
+              <div class="mh-data mh-data-left">Mode</div>
+              <div class="mh-data mh-data-mid-left">Diff.</div>
+              <div class="mh-data mh-data-mid-right">Date</div>
+              <div class="mh-data mh-data-right">Time</div>
+            </div>                
+          </div>
+          <div class="mh-tabcontent">
+            <div class="highscores" ng-repeat="x in recentScores track by $index">
+              <div class="mh-data mh-data-left">{{x[3]}}</div>
+              <div class="mh-data mh-data-mid-left">{{x[2]}}</div>
+              <div class="mh-data mh-data-mid-right">{{x[0]}}</div>
+              <div class="mh-data mh-data-right">{{x[1]}}</div>
+            </div>
+          </div>
+          <div class = "row">
+            <button ng-click="clearRecentScores()"> Clear recent scores</button>
+          </div>          
+        </div>
+        <div id = "stats-rr" class="hs-tab-container stats-tabcontent">
+          <div class = "row">Unfinished matches</div>
+          <div id = "hs-header-block" class="hs-header-content mh-tabcontent">
+            <div class="hs-header">
+              <div class="hs-data rr-data-left">difficulty</div>
+              <div class="hs-data rr-data-mid-left">your time</div>
+              <div class="hs-data rr-data-mid-right">your score</div>
+              <div class="hs-data rr-data-right">opp sco</div>
+            </div>                
+          </div>
+          <div class="mh-tabcontent">
+            <div class="highscores" ng-repeat="x in incompleteResults track by $index">
+              <div class="mh-data rr-data-left">{{x[0]}}</div>
+              <div class="mh-data rr-data-mid-left">{{x[3]}}</div>
+              <div class="mh-data rr-data-mid-right">{{x[1]}}</div>
+              <div class="mh-data rr-data-right">{{x[2]}}</div>
+            </div>
+          </div>
+          <div class = "row">Finished matches</div>
+          <div id = "hs-header-block" class="hs-header-content mh-tabcontent">
+            <div class="hs-header">
+              <div class="hs-data rr-data-left">message</div>
+              <div class="hs-data rr-data-mid-left">diff</div>
+              <div class="hs-data rr-data-mid-right">your score</div>
+              <div class="hs-data rr-data-right">opp sco</div>
+            </div>                
+          </div>
+          <div class="mh-tabcontent">
+            <div class="highscores" ng-repeat="x in completeResults track by $index">
+              <div class="mh-data rr-data-left">{{x[0]}}</div>
+              <div class="mh-data rr-data-mid-left">{{x[3]}}</div>
+              <div class="mh-data rr-data-mid-right">{{x[1]}}</div>
+              <div class="mh-data rr-data-right">{{x[2]}}</div>
+            </div>
+          </div>
+          <div class = "row">
+            <button ng-click="clearOnlineResults()"> Clear online results</button>
+          </div>          
+        </div>
+        
       </ul>
     </div>
-    <div class="mh-tabcontent">
-      <div id = "stats-mh" class="hs-tab-container stats-tabcontent">
-        <div class="highscores" ng-repeat="x in recentScores track by $index">
-          <div class="mh-data">{{x[2]}}</div>
-          <div class="mh-data">{{x[0]}}</div>
-          <div class="mh-data">{{x[1]}}</div>
-        </div>
-      </div>
-    </div>
+    
 
-    <div class = "row">
-      <button ng-click="clearHighScores()"> Clear high scores</button>
-    </div>
+    
   </ion-content>
 </ion-view>
 

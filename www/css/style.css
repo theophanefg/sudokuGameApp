@@ -12,8 +12,19 @@ ul.stats-tab {
 /* Float the list items side by side */
 .stats-tab li {
   float: left;
-  width: 50%;
   display: inline;
+}
+
+.stats-tab-hs{
+  margin-right: 30px;
+}
+
+.stats-tab-mh{
+  margin-right: 30px;
+}
+
+.stats-tab-rr{
+  margin-right: 30px;
 }
 
 /* Style the links inside the list items */
@@ -37,16 +48,14 @@ ul.stats-tab li a:hover {
 
 .stats-tabcontent {
   display: none;
-  margin-top: -20px;
   padding: 3px;
-  border: 1px solid #ccc;
-  border-top: none;
   height: 80%;
 
 }
 
 .stats-tab-container {
   width: 100%;
+  padding-top: 3px;
 }
 
 /* Style the list */
@@ -58,6 +67,7 @@ ul.hs-tab {
   padding: 0;
   overflow: hidden;
   border: 1px solid #ccc;
+  border-bottom: none;
   background-color: #f1f1f1;
 }
 
@@ -86,22 +96,95 @@ ul.hs-tab li a:hover {
   cursor: pointer;
 }
 
+.hs-header {
+  font-weight: 600;
+}
+
+
 .hs-data {
   display: inline-block;
   width: 32%;
 }
 
-.mh-data {
-  display: inline-block;
+.hs-data-left {
+  text-align: center;  
+  width: 15%;
+}
+
+.hs-data-mid-left {
+  text-align: center;
+  border-left: 0.5px solid #ccc;
+  border-right: 0.5px solid #ccc;
+  width: 25%;
+}
+
+.hs-data-mid-right {
+  text-align: center;
+  border-right: 0.5px solid #ccc;
+  width: 35%;
+}
+
+.hs-data-right {
+  text-align: center;
+  width: 20%;
+}
+
+.mh-data-left {
+  text-align: center;  
+  width: 25%;
+}
+
+.mh-data-mid-left {
+  text-align: center;
+  border-left: 0.5px solid #ccc;
+  border-right: 0.5px solid #ccc;
+  width: 20%;
+}
+
+.mh-data-mid-right {
+  text-align: center;
+  border-right: 0.5px solid #ccc;
   width: 30%;
 }
 
+.mh-data-right {
+  text-align: center;
+  width: 20%;
+}
+
+.mh-data {
+  display: inline-block;
+}
+
 .mh-tabcontent {
-  display: inline;
-  padding: 3px;
+  padding-left: 3px;
+  padding-right: 3px;
+  border: 1px solid #ccc;
   border-top: none;
   height: 80%;
-  width: 100%;
+}
+
+.rr-data-left {
+  text-align: center;  
+  width: 25%;
+}
+
+.rr-data-mid-left {
+  text-align: center;
+  border-left: 0.5px solid #ccc;
+  border-right: 0.5px solid #ccc;
+  width: 20%;
+}
+
+.rr-data-mid-right {
+  text-align: center;
+  border-right: 0.5px solid #ccc;
+  width: 30%;
+}
+
+.rr-data-right {
+  text-align: center;
+  width: 20%;
 }
 
 .active-tab {
@@ -116,11 +199,17 @@ ul.hs-tab li a:hover {
 
 /* Style the tab content */
 .hs-tabcontent {
-  padding: 3px;
+  padding-left: 3px;
+  padding-right: 3px;
   border: 1px solid #ccc;
   border-top: none;
   height: 80%;
 }
+
+.hs-header-content {
+  border-top: 1px solid #ccc;
+}
+
 
 .hs-tab-container {
   width: 100%;
@@ -135,12 +224,10 @@ ul.hs-tab li a:hover {
 
 .score-tab{
   position: absolute;
-  top: 50%;
-  margin-top: -40%;
   left:50%;
   margin-left: -160px;
   width: 320px !important;
-  height: 83%;
+  height: 78%;
 }
 
 .score-tab-body{

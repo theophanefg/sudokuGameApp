@@ -1,12 +1,34 @@
 angular.module('starter.services', [])
 
 
-
+/**
+ * This factory contains all the mandatory function to manage the gameplay part of the app, 
+ * which takes part in the playTab.
+ */
 .factory('Grid', function(){
+  /**
+   * This is the grid displayed in the play tab of the app, the one the user can modify
+   * It's a 2 dimensional array(9*9), containing numbers from 1 to 9, or spaces, which represent empty cells.
+   */
   var grid;
+
+  /**
+   * This is the grid as it was in the beginning, its used to color the initial numbers and to stop
+   * the user from modifiying these numbers
+   * It's a 2 dimensional array(9*9), containing numbers from 1 to 9, or spaces, which represent empty cells.
+   */
   var initGrid;
+
+  /**
+   * This is the solution to the current grid. It is used to verify is the user completed the grid
+   * It's a 2 dimensional array(9*9), containing numbers from 1 to 9.
+   */
   var solGrid;
 
+  /**
+   * This array contains 10 stringed easy grids. Each row is the base grid (first 81 numbers), and then
+   * the solution (the following 81 numbers)
+   */
   var easyGrids = [
     '070102090302860007004009560405000026020030080910000704061200300700083201050401070576142893392865417184379562435718926627934185918526734861257349749683251253491678',
     '032009040005001207000740085008056901600000004901270500360095000807300600020800410732589146485631297196742385278456931653918724941273568364195872817324659529867413',
@@ -20,6 +42,10 @@ angular.module('starter.services', [])
     '000000307906830050000400008058006001203000905700300680600007000090042803807000000184265397976831254325479168458926731263718945719354682632587419591642873847193526'
   ];
 
+  /**
+   * This array contains 10 stringed medium grids. Each row is the base grid (first 81 numbers), and then
+   * the solution (the following 81 numbers)
+   */
   var mediumGrids = [
     '000609002007000105000507030006031250003050700028740900060405000704000300800103000135689472687324195249517638976831254413952786528746913361475829754298361892163547',
     '800014030070000905002006040410090200008060500005020013040600300301000050060380009856914732174832965932756148413598276728163594695427813249675381381249657567381429',
@@ -33,8 +59,12 @@ angular.module('starter.services', [])
     '000007000010542078080900602030008000006495100000200080104009050260754010000600000342867591619542378587913642435178269826495137791236485174329856268754913953681724'
   ];
 
+  /**
+   * This array contains 10 stringed hard grids. Each row is the base grid (first 81 numbers), and then
+   * the solution (the following 81 numbers)
+   */
   var hardGrids = [
-    '000012040050006108000980600001029000500468007000170400007051000305800090020690000876512349954736128213984675741329586532468917689175432497251863365847291128693754',
+    '000012040050006108000980600001029000500468007000170400007051000305800090020690000876544449954736128213984675741329586532468917689175432497251863365847291128693754',
     '000002060200000847496005000004030070001907400050020300000200913189000004040100000873412569215396847496875132924531678631987425758624391567248913189763254342159786',
     '000103040080406050000005009009006870701000905038009100200300000050907010070204000695123748387496251142785369529631874761842935438579126214358697853967412976214583',
     '020074800040600207507000004203140000000000000000059701300000608904008050005420070126974835849635217537812964293147586751286493468359721372591648914768352685423179',
@@ -46,6 +76,10 @@ angular.module('starter.services', [])
     '210000300003860500000003014040500700760000045001007020830600000007084900004000038218459367473861592956723814342516789769238145581947623835692471127384956694175238'
   ];
 
+  /**
+   * This array contains 10 stringed extreme grids. Each row is the base grid (first 81 numbers), and then
+   * the solution (the following 81 numbers)
+   */
   var extremeGrids = [
     '060700000700100068001540070006030090900601005070050300090014700510007004000005020265789431749123568381546972156438297923671845874952316698214753512397684437865129',
     '040090000100753094007002003080000056005000900410000070500100600370586009000070030843691725162753894957842163289317456735468912416925378524139687371586249698274531',
@@ -58,10 +92,46 @@ angular.module('starter.services', [])
     '000109030130700006708003201900004010000000000080900007203800109600007082090502000542169738139728456768453291925674813376281945481935627253846179614397582897512364',
     '509004870800170000007006000080400900020709010005001060000500700000047001072600309519324876846175293237986145681452937324769518795831462168593724953247681472618359'
   ];
+
+  /**
+   * This array is the position of the cell that caused an error, if an error is detected. 
+   * For instance, if there is a 5 at the position [3,3], and you try to put another five
+   * in the same row, let's say at the position [3,5], this variable will take the value
+   * [3,3], and it will be used to change the color of the corresponding cell in the displayed grid.
+   */
   var errorSource = [-1,-1];
-  var gameMode; //0 is solo, 1 is 1v1, 2 is coop
-  var playMode = 0; //0 is cell first, 1 is number first
-  var entryMode = 0; //0 is for numbers, 1 is for notes
+
+  /**
+   * This int is a reprensation of the current game mode.
+   * Its possible values are:
+   *  0 for the solo mode, in which you play alone,
+   *  1 for the 1v1 mode, in which you compete against an adversary, online,
+   *  2 for the coop mode, in which you work with someone else to complete a grid, also online ( and which is yet to be implemented)
+   */
+  var gameMode;
+
+  /**
+   * This int is a reprensation of the current play mode.
+   * Its possible values are:
+   *  0 for cell first: you first select a cell, then press the number(s) you want to put in that cell
+   *  1 for number first: you first select a number, then press the case(s) you want to put that number in
+   * Default is cell first.
+   */
+  var playMode = 0;
+
+  /**
+   * This int is a reprensation of the current entry mode.
+   * its possible values are:
+   *  0 for numbers: When a number will be added to a cell, the current number and notes present in the cell
+   *                 will be overwritten by the new number value
+   *  1 for notes: When a number will be added to a cell, it will be in the form of a note. You can put one note
+   *               for each possible value (1-9). You cant put a note in a case in which there is already a number,
+   *               unless you first erase that number. Re-adding the same note to a case will toggle the said note.
+   * Default entry mode is numbers.
+   */
+  var entryMode = 0;
+
+
   var numberBuffer = '1';
   var caseBuffer = [0,0];
   var difficulty = 'easy';
@@ -73,7 +143,14 @@ angular.module('starter.services', [])
   var enableNumberHighlighting = true;
   var apiAddress = "http://rest-api-sudoku-app.local.humanequation.co/api";
   var matchId; // used for online 1v1 game mode
+  var playerId = 4444;
   return {
+    /**
+   * Adds two numbers
+   * @param {Number} a 
+   * @param {Number} b
+   * @return {Number} sum
+   */
     getGrid: function(){
       return grid;
     },
@@ -405,16 +482,15 @@ angular.module('starter.services', [])
     startNew1v1Game: function() {
       console.log('----startnew1v1game---');
       var xhr = new XMLHttpRequest();
-      xhr.open("GET", apiAddress+"/newgame/" + difficulty + "/1235", false);
+      xhr.open("GET", apiAddress+"/newgame/" + difficulty + "/" + playerId, false);
       xhr.send();
       console.log("status" + xhr.status);
       console.log("text" + xhr.statusText);
       var jsonStuff = xhr.responseText;
-      console.log("json stuff: " + JSON.parse(jsonStuff)[0]);
       matchId = JSON.parse(xhr.responseText)[1];
       console.log('matchId: '+matchId);
-      var completedGrid = this.getCompletedGrid(JSON.parse(xhr.responseText)[0]);
-      var cleanGrid = this.getCleanGrid(JSON.parse(xhr.responseText)[0]);
+      var completedGrid = JSON.parse(xhr.responseText)[0][1];
+      var cleanGrid = JSON.parse(xhr.responseText)[0][0];
       grid = JSON.parse(JSON.stringify(cleanGrid));
       initGrid = JSON.parse(JSON.stringify(cleanGrid));
       solGrid = JSON.parse(JSON.stringify(completedGrid));
@@ -426,11 +502,21 @@ angular.module('starter.services', [])
       //console.log('---generateGrid---');
       var gridNumber = Math.floor(Math.random() * 10); // 0 to 9
       console.log("grid number:" + gridNumber);
-      var gridString = '076142893392865417184379562435718926627934185918526734861257349749683251253491678576142893392865417184379562435718926627934185918526734861257349749683251253491678';
-      //var gridString = this.getGridString(gridNumber);
+      //var gridString = '076142893392865417184379562435718926627934185918526734861257349749683251253491678576142893392865417184379562435718926627934185918526734861257349749683251253491678';
+      var gridString = this.getGridString(gridNumber);
       var completedGrid = this.getCompletedGrid(gridString);
       var cleanGrid = this.getCleanGrid(gridString);
       return this.shuffleGrids(completedGrid, cleanGrid);
+    },
+
+    forfeitMatch: function () {
+      this.clearGame();
+      if(gameMode == 1) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", apiAddress+"/forfeitmatch/" + matchId + "/" + playerId, false);
+        xhr.send();
+        //matchId = JSON.parse(xhr.responseText)[1];
+      }
     },
 
     //**************** GRID SHUFFLING FUNCTIONS********************
@@ -738,7 +824,7 @@ angular.module('starter.services', [])
       console.log('----saveScoreOnline---');
       var xhr = new XMLHttpRequest();
       var time = (parseInt(timerMin) * 60 + parseInt(timerSec)).toString();
-      xhr.open("GET", apiAddress+"/savescore/" + matchId + "/1235/" + time, false);
+      xhr.open("GET", apiAddress+"/savescore/" + matchId + "/" + playerId + "/" + time, false);
       xhr.send();
       console.log("winning status: " + JSON.parse(xhr.responseText));
       return JSON.parse(xhr.responseText);
@@ -777,7 +863,7 @@ angular.module('starter.services', [])
     },
 
     loadSolGridSolo: function () {
-      solGrid=  JSON.parse(window.localStorage.getItem("solGridSolo"+difficulty));
+      solGrid =  JSON.parse(window.localStorage.getItem("solGridSolo"+difficulty));
     },
 
     loadGrid1v1: function () {
@@ -799,7 +885,7 @@ angular.module('starter.services', [])
     loadTimers1v1: function() {
       console.log('----loadTimerSec1v1---');
       var xhr = new XMLHttpRequest();
-      xhr.open("GET", apiAddress+"/gettimer/" + matchId + "/1235", false);
+      xhr.open("GET", apiAddress+"/gettimer/" + matchId + "/" + playerId, false);
       xhr.send();
       console.log("json stuff: " + JSON.parse(xhr.responseText));
       var totalSecTime = JSON.parse(xhr.responseText);
@@ -823,7 +909,7 @@ angular.module('starter.services', [])
         window.localStorage.removeItem("timerMin"+difficulty);
         window.localStorage.removeItem("timerSec"+difficulty);
       }
-      else if (gameMode = 1) {
+      else if (gameMode == 1) {
         window.localStorage.removeItem("grid1v1"+difficulty);
         window.localStorage.removeItem("initGrid1v1"+difficulty);
         window.localStorage.removeItem("solGrid1v1"+difficulty);
@@ -924,13 +1010,17 @@ angular.module('starter.services', [])
   .factory('Stats', function() {
     // Might use a resource here that returns a JSON array
 
-    // Some fake testing data
+    var gameMode; //0 is solo, 1 is 1v1, 2 is coop
     var difficulty;
     var highScoresEasy;
     var highScoresMedium;
     var highScoresHard;
     var highScoresExtreme;
     var recentScores;
+    var completeResults;
+    var incompleteResults;
+    var playerId = 4444;
+    var apiAddress = "http://rest-api-sudoku-app.local.humanequation.co/api";
 
     var monthNames = [
       "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dev"
@@ -943,6 +1033,10 @@ angular.module('starter.services', [])
 
       getDifficulty: function() {
         return difficulty;
+      },
+
+      setGameMode: function (newGameMode) {
+        gameMode = newGameMode;
       },
 
       getRecentScores: function() {
@@ -990,9 +1084,9 @@ angular.module('starter.services', [])
         var savedDate = this.getStringedDate();
         var secTime = (parseInt(timeMin * 60) + parseInt(timeSec)).toString();
         var time = timeMin + ':' + timeSec;
-
+        var actualGameMode = this.getStringedGameMode();
         if(difficulty == 'easy') {
-          highScoresEasy.push([secTime, savedDate, time]);
+          highScoresEasy.push([secTime, savedDate, time, actualGameMode]);
           highScoresEasy.sort(function(a,b){return a[0] -b[0]});
           if(highScoresEasy.length >15) {
             highScoresEasy.length -= 1;
@@ -1000,7 +1094,7 @@ angular.module('starter.services', [])
         }
         else if(difficulty == 'medium')
         {
-          highScoresMedium.push([secTime, savedDate, time]);
+          highScoresMedium.push([secTime, savedDate, time, actualGameMode]);
           highScoresMedium.sort(function(a,b){return a[0] -b[0]});
           if(highScoresEasy.length >15) {
             highScoresEasy.length -= 1;
@@ -1008,7 +1102,7 @@ angular.module('starter.services', [])
         }
         else if(difficulty == 'hard')
         {
-          highScoresHard.push([secTime, savedDate, time]);
+          highScoresHard.push([secTime, savedDate, time, actualGameMode]);
           highScoresHard.sort(function(a,b){return a[0] -b[0]});
           if(highScoresEasy.length >15) {
             highScoresEasy.length -= 1;
@@ -1016,16 +1110,17 @@ angular.module('starter.services', [])
         }
         else if(difficulty == 'extreme')
         {
-          highScoresExtreme.push([secTime, savedDate, time]);
+          highScoresExtreme.push([secTime, savedDate, time, actualGameMode]);
           highScoresExtreme.sort(function(a,b){return a[0] -b[0]});
           if(highScoresEasy.length >15) {
             highScoresEasy.length -= 1;
           }
         }
-        recentScores.unshift([savedDate, time, difficulty]);
+        recentScores.unshift([savedDate, time, difficulty, actualGameMode]);
         if(recentScores.length >15) {
           recentScores.length -= 1;
         }
+        console.log("recentScores: " + recentScores);
       },
 
       parseArrayToStringHS: function (array) {
@@ -1075,6 +1170,84 @@ angular.module('starter.services', [])
         $scope.recentScores = recentScores;
       },
 
+      clearRecentScores: function() {
+        console.log('---stats: clearRecentScores---');
+        window.localStorage.removeItem("recentScores");
+      },
+
+      saveOnlineResults: function() {
+        window.localStorage.setItem("completeResults", JSON.stringify(completeResults));
+      },
+
+      loadOnlineResults: function() {
+        // we load the completed games in the local memory and we clear the incompleted ones,
+        // since the api sends back completed grids only once, while it sends back incompleted grids
+        // every time results are queried
+        if(window.localStorage.getItem("completeResults")!=undefined)
+          completeResults = JSON.parse(window.localStorage.getItem("completeResults"));
+        else
+          completeResults = [];
+        incompleteResults = [];
+
+        // we then check online if there is new recent result(s) 
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", apiAddress+"/getrecentresults/" + playerId, false);
+        xhr.send();
+        console.log("json stuff: " + JSON.parse(xhr.responseText));
+        var recentResults = JSON.parse(xhr.responseText);
+        var dataArray;
+        // pos 0 is game id, 1 is winnerId, 2 is player's time, 3 is adversary time, 4 is diff
+        for(var i = 0; i<recentResults.length; i++) {
+          var winnerId = recentResults[i][1];
+
+          dataArray = [];
+          if(winnerId == null) // if there is no winner yet
+          {
+            dataArray.push(recentResults[i][4]);
+            dataArray.push(recentResults[i][2]);        
+            incompleteResults.unshift(dataArray);
+          }
+          else {
+            if (winnerId == 0) {
+              dataArray.push('It s a tie');              
+            }
+            else if (winnerId == playerId) {
+              if(recentResults[i][3] == 0) {// check if adversary forfeited
+                dataArray.push('You won, your adversary forfeited.');
+              }
+              else {
+                dataArray.push('You won!');
+              }              
+            }
+            else {
+              if(recentResults[i][2] == 0) { // check if user forfeited
+                dataArray.push('You lost, you forfeited.');
+              }
+              else {
+                dataArray.push('You lost!');
+              }              
+            }
+            dataArray.push(recentResults[i][2]);
+            dataArray.push(recentResults[i][3]);
+            dataArray.push(recentResults[i][4]);
+            completeResults.push(dataArray);
+          }          
+        }
+        this.saveOnlineResults();
+      },
+
+      updateOnlineResults: function ($scope) {
+        console.log('---stats: update scores---');
+        this.loadOnlineResults();
+        $scope.completeResults = completeResults;
+        $scope.incompleteResults = incompleteResults;
+      },
+
+      clearOnlineResults: function() {
+        console.log('---stats: clearonlineResults---');
+        window.localStorage.removeItem("completeResults");
+      },
+
       getStringedDate: function () {
         var date = new Date();
         var day = date.getDate().toString();
@@ -1086,6 +1259,19 @@ angular.module('starter.services', [])
 
         var stringedDate = day + ' ' + monthNames[monthIndex] + ' ' + year;
         return stringedDate;
+      },
+
+      getStringedGameMode: function() {
+        var actualGameMode = '';
+        console.log('gameMode: ' + gameMode);
+        if(gameMode == 0) {
+          actualGameMode = 'Solo';
+        }
+        else if (gameMode == 1){
+          actualGameMode = 'Faceoff';
+        }
+        return actualGameMode;
+        console.log('actualGameMode: ' + actualGameMode);
       }
     };
   })
