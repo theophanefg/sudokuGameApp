@@ -8,11 +8,13 @@ angular.module('starter.services', [])
 .factory('Grid', function(){
   /**
    * This is the grid displayed in the play tab of the app, the one the user can modify
-   * It's a 2 dimensional array(9*9), containing numbers from 1 to 9, or spaces, which represent empty cells.
+   * It's a 2 dimensional array(9*9), containing numbers(strings) from 1 to 9, or spaces, which represent empty cells.
+   * it can also contain a 9 number long string which indicates that it contains notes.
    *
    * @type: array
    */
   var grid;
+
 
   /**
    * This is the grid as it was in the beginning, its used to color the initial numbers and to stop
@@ -23,6 +25,7 @@ angular.module('starter.services', [])
    */
   var initGrid;
 
+
   /**
    * This is the solution to the current grid. It is used to verify is the user completed the grid
    * It's a 2 dimensional array(9*9), containing numbers from 1 to 9.
@@ -30,6 +33,7 @@ angular.module('starter.services', [])
    * @type: array
    */
   var solGrid;
+
 
   /**
    * This array contains 10 stringed easy grids. Each row is the base grid (first 81 numbers), and then
@@ -50,6 +54,7 @@ angular.module('starter.services', [])
     '000000307906830050000400008058006001203000905700300680600007000090042803807000000184265397976831254325479168458926731263718945719354682632587419591642873847193526'
   ];
 
+
   /**
    * This array contains 10 stringed medium grids. Each row is the base grid (first 81 numbers), and then
    * the solution (the following 81 numbers)
@@ -68,6 +73,7 @@ angular.module('starter.services', [])
     '800005010305400700010030200080006020960000051020300090009040060006003908070600004842765319395412786617938245781596423963274851524381697139847562456123978278659134',
     '000007000010542078080900602030008000006495100000200080104009050260754010000600000342867591619542378587913642435178269826495137791236485174329856268754913953681724'
   ];
+
 
   /**
    * This array contains 10 stringed hard grids. Each row is the base grid (first 81 numbers), and then
@@ -88,6 +94,7 @@ angular.module('starter.services', [])
     '210000300003860500000003014040500700760000045001007020830600000007084900004000038218459367473861592956723814342516789769238145581947623835692471127384956694175238'
   ];
 
+
   /**
    * This array contains 10 stringed extreme grids. Each row is the base grid (first 81 numbers), and then
    * the solution (the following 81 numbers)
@@ -107,6 +114,7 @@ angular.module('starter.services', [])
     '509004870800170000007006000080400900020709010005001060000500700000047001072600309519324876846175293237986145681452937324769518795831462168593724953247681472618359'
   ];
 
+
   /**
    * This array is the position of the cell that caused an error, if an error is detected. 
    * For instance, if there is a 5 at the position [3,3], and you try to put another five
@@ -116,6 +124,7 @@ angular.module('starter.services', [])
    * @type: array
    */
   var errorSource = [-1,-1];
+
 
   /**
    * This int is a reprensation of the current game mode.
@@ -128,6 +137,7 @@ angular.module('starter.services', [])
    */
   var gameMode;
 
+
   /**
    * This int is a reprensation of the current play mode.
    * Its possible values are:
@@ -138,6 +148,7 @@ angular.module('starter.services', [])
    * @type: int
    */
   var playMode = 0;
+
 
   /**
    * This int is a reprensation of the current entry mode.
@@ -153,6 +164,7 @@ angular.module('starter.services', [])
    */
   var entryMode = 0;
 
+
   /**
    * This string holds the value of the currently selected number.
    * It's value is between 1 and 9 for a regular number, and is of 0 
@@ -162,6 +174,7 @@ angular.module('starter.services', [])
    */
   var numberBuffer = '1';
 
+
   /**
    * This array holds the value of the currently selected case. Its indexes
    * are from 0 to 8, to cover all the cases of the grid
@@ -169,6 +182,7 @@ angular.module('starter.services', [])
    * @type: array
    */
   var caseBuffer = [0,0];
+
 
   /**
    * This string holds the value of the current difficulty of the grid. It is mainly used
@@ -178,19 +192,22 @@ angular.module('starter.services', [])
    */
   var difficulty = 'easy';
 
+
   /**
-   * This int contains the minute part of the timer of the current game.
+   * This string contains the minute part of the timer of the current game.
    *
-   * @type: int
+   * @type: string
    */
   var timerMin;
 
+
   /**
-   * This int contains the seconds part of the timer of the current game.
+   * This string contains the seconds part of the timer of the current game.
    *
-   * @type: int
+   * @type: string
    */
   var timerSec;
+
 
   /**
    * This boolean value indicates if the error detection feature is enabled.
@@ -198,6 +215,7 @@ angular.module('starter.services', [])
    * @type: bool
    */
   var enableErrorDetection = true;
+
 
   /**
    * This boolean value indicates if the notes are automaticly erased as
@@ -207,6 +225,7 @@ angular.module('starter.services', [])
    */
   var enableNoteAutoErasing = true;
 
+
   /**
    * This boolean value indicates if the cases with the same value as the currently
    * selected number will be highligthed.
@@ -215,6 +234,7 @@ angular.module('starter.services', [])
    */
   var enableNumberHighlighting = true;
 
+
   /**
    * This string is the adress of the api querried in the online mode related functions.
    *
@@ -222,12 +242,14 @@ angular.module('starter.services', [])
    */
   var apiAddress = "http://rest-api-sudoku-app.local.humanequation.co/api";
 
+
   /**
    * This int holds the value of the current 1v1 online match.
    *
    * @type: int
    */
   var matchId; // used for online 1v1 game mode
+
 
   /**
    * This int holds the value of the player's ID, which is used for online matches.
@@ -241,6 +263,7 @@ angular.module('starter.services', [])
     //*************************************************************
     //************************ ACCESSORS **************************
     //*************************************************************
+
     getGrid: function(){
       return grid;
     },
@@ -291,37 +314,60 @@ angular.module('starter.services', [])
       gameMode = newGameMode;
     },
 
+
     //*************************************************************
     //**************** GAMEPLAY RELATED FUNCTIONS *****************
     //*************************************************************
 
+
+    /**
+     * Switch the value of the play mode from 0 to 1 or from 1 to 0
+     */
     switchPlayMode: function() {
+      // if play mode is cell first
       if(playMode == 0) {
         playMode = 1;
       }
+      // if play mode is number first
       else {
         playMode = 0;
       }
 
     },
 
+
+    /**
+     * Switch the value of the entry mode from 0 to 1 of from 1 to 0
+     */
     switchEntryMode: function() {
+      // if entry mode is numbers
       if(entryMode == 0) {
         entryMode = 1;
       }
+      // if entry mode is digits
       else {
         entryMode = 0;
       }
     },
 
+
+    /**
+     * Handles the event of the pressing of a case via the user interface.
+     * 
+     * @param {int} rowIndex
+     * @param {int} colIndex
+     */
     casePressed: function(rowIndex, colIndex) {
+      // if entry mode is numbers
       if(entryMode == 0) {
+        // if play mode is cell first, we select the case
         if(playMode == 0) {
           caseBuffer[0] = rowIndex;
           caseBuffer[1] = colIndex;
           errorSource[0] = -1;
           errorSource[1] = -1;
         }
+        // if play mode is digit first, we put the selected digit in the case pressed
         else if (initGrid[rowIndex][colIndex] < 1 || initGrid[rowIndex][colIndex] > 9){
           if(numberBuffer == '0' )
             this.eraseNumber(rowIndex, colIndex);
@@ -329,14 +375,16 @@ angular.module('starter.services', [])
             this.changeNumber(numberBuffer, rowIndex, colIndex);
         }
       }
+      // if entry mode is notes
       else {
-        console.log("casePressed--digitmode");
+        // if play mode is cell first, we select the case
         if(playMode == 0) {
           caseBuffer[0] = rowIndex;
           caseBuffer[1] = colIndex;
           errorSource[0] = -1;
           errorSource[1] = -1;
         }
+        // if play mode is digit first, we put the selected digit in the case pressed
         else {
           if(numberBuffer == '0' && (initGrid[rowIndex][colIndex] < 1 || initGrid[rowIndex][colIndex] > 9))
             this.eraseNumber(rowIndex, colIndex);
@@ -349,28 +397,40 @@ angular.module('starter.services', [])
 
     },
 
+
+    /**
+     * Handles the event of the pressing of a number via the user interface.
+     * 
+     * @param {int} number
+     */
     numberPressed: function(number) {
-      console.log("--numberPressed--");
+      //console.log("--numberPressed--");
+      // if entry mode is numbers
       if(entryMode == 0) {
+        // if play mode is cell first, we put the number pressed in the cell selected previously
         if(playMode == 0) {
           //we make sure we have selected a case first
           if(caseBuffer[0] != -1 && (initGrid[caseBuffer[0]][caseBuffer[1]] < 1 || initGrid[caseBuffer[0]][caseBuffer[1]] > 10))
             this.changeNumber(number,caseBuffer[0],caseBuffer[1]);
         }
+        // if play mode is digit first, we select the number
         else {
           numberBuffer = number;
           errorSource[0] = -1;
           errorSource[1] = -1;
         }
       }
+      // if entry mode is notes
       else {
         console.log("numberPressed--digitmode");
+        // if play mode is cell first, , we put the number pressed in the cell selected previously
         if(playMode == 0) {
           //we make sure we have selected a case first and it contains digits or nothing
           var value = grid[caseBuffer[0]][caseBuffer[1]];
           if(caseBuffer[0] != -1 && (value > 10 || value < 1 || value.length > 2))
             this.toggleDigit(number,caseBuffer[0],caseBuffer[1]);
         }
+        // if play mode is digit first, we select the number
         else {
           numberBuffer = number;
           errorSource[0] = -1;
@@ -380,23 +440,45 @@ angular.module('starter.services', [])
 
     },
 
+
+    /**
+     * Handles the event of the pressing of the erase buttons via the user interface.
+     */
     erasePressed: function() {
       console.log("--erasePressed--");
+      // if play mode is cell first, we erase the the stuff in the selected case
       if(playMode == 0) {
         //we make sure we have selected a case first
         if(caseBuffer[0] != -1 &&(initGrid[caseBuffer[0]][caseBuffer[1]] < 1 || initGrid[caseBuffer[0]][caseBuffer[1]] > 10))
           this.eraseNumber(caseBuffer[0],caseBuffer[1]);
       }
+      // if play mode is digit first, we select the 0
       else {
         numberBuffer = '0';
       }
     },
 
+
+    /**
+     * Put the value of the currently selected cell to ' '
+     * 
+     * @param {int} rowIndex
+     * @param {int} colIndex
+     */
     eraseNumber: function(rowIndex, colIndex){
       console.log("--eraseNumber");
       grid[rowIndex][colIndex] = ' ';
     },
 
+
+    /**
+     * We change the value of the cell at the passed coordinates for the passed value,
+     * unless it is against the rules of the sudoku game!
+     * 
+     * @param {int} newValue
+     * @param {int} rowIndex
+     * @param {int} colIndex
+     */
     changeNumber: function(newValue,  rowIndex, colIndex){
         // verifier si le nombre est a un endroit correct
 
@@ -416,28 +498,56 @@ angular.module('starter.services', [])
         // si cest correct selon la verification, changer le nombre, sinon renvoyer lancienne valeur
     },
 
+
+    /**
+     * Used to replace a caracter at a specific index for the passed character, in a string.
+     * 
+     * @param {string} string
+     * @param {int} index
+     * @param {char} character
+     * @return {string}
+     */
     replaceAt: function(string, index, character) {
       return string.substr(0, index) + character + string.substr(index+character.length);
     },
 
-    toggleDigit: function(digitValue,  rowIndex, colIndex){
-      console.log("--toggleDigit--");
 
+    /**
+     * Used to toggle a digit for the note mode, at the cell a the passed coordinates
+     * 
+     * @param {int} digitValue
+     * @param {int} rowIndex
+     * @param {int} colIndex
+     * @return {string}
+     */
+    toggleDigit: function(digitValue,  rowIndex, colIndex){
+      // if the case is not yet in the digit format, we put the string '000000000'
+      // inside of it, which means all notes are at 0
       if (grid[rowIndex][colIndex].length < 3) {
         grid[rowIndex][colIndex] = '000000000';
       }
+      // if the value at the passed coordinates is 0, we change it for 1
       if(grid[rowIndex][colIndex][digitValue-1] == '0') {
-        console.log("cond 1 atteinte");
         grid[rowIndex][colIndex]= this.replaceAt(grid[rowIndex][colIndex], digitValue -1 , '1');
       }
+      // if the value at the passed coordinates is 1, we change it for 0
       else if (grid[rowIndex][colIndex][digitValue-1] == '1') {
-        console.log("cond 2 atteinte");
         grid[rowIndex][colIndex]= this.replaceAt(grid[rowIndex][colIndex], digitValue -1 , '0');
       }
       errorSource[0]= -1;
       errorSource[1]= -1;
     },
 
+
+    /**
+     * check if the passed number at the cell corresponding to the passed coordinates respects the rules
+     * of sudoku
+     * 
+     * @param {int} newValue
+     * @param {int} rowIndex
+     * @param {int} colIndex
+     * @return {bool} isValid
+     */
     checkValidity: function(newValue,  rowIndex, colIndex){
       var isValid = true;
       var rowCheckedIsValid = this.checkRow(newValue, rowIndex, colIndex);
@@ -464,6 +574,17 @@ angular.module('starter.services', [])
       }
       return isValid;
     },
+
+
+    /**
+     * check if there is the same value somewhere else in the row of the cell 
+     * corresponding to the passed coordinates.
+     * 
+     * @param {int} newValue
+     * @param {int} rowIndex
+     * @param {int} colIndex
+     * @return {bool} isValid
+     */
     checkRow: function(newValue, rowIndex, colIndex) {
       var isValid = [true,0,0]; // isValid[1] is row index, isValid[2] is column index
       for (var i = 0; i < 9; i++) {
@@ -471,12 +592,22 @@ angular.module('starter.services', [])
           isValid[0] = false;
           isValid[1] = rowIndex;
           isValid[2] = i;
-          console.log("erreur row");
-          console.log("grid[rowIndex][i]: " + grid[rowIndex][i] + "newValue: " + newValue);
+          //console.log("erreur row");
         }
       }
       return isValid;
     },
+
+
+    /**
+     * check if there is the same value somewhere else in the column of the cell 
+     * corresponding to the passed coordinates.
+     * 
+     * @param {int} newValue
+     * @param {int} rowIndex
+     * @param {int} colIndex
+     * @return {bool} isValid
+     */
     checkColumn: function(newValue, rowIndex, colIndex) {
       var isValid = [true,0,0]; // isValid[1] is row index, isValid[2] is column index
       for (var i = 0; i < 9; i++) {
@@ -484,11 +615,22 @@ angular.module('starter.services', [])
           isValid[0] = false;
           isValid[1] = i;
           isValid[2] = colIndex;
-          console.log("erreur col");
+          //console.log("erreur col");
         }
       }
       return isValid;
     },
+
+
+    /**
+     * check if there is the same value somewhere else in the square of the cell 
+     * corresponding to the passed coordinates.
+     * 
+     * @param {int} newValue
+     * @param {int} rowIndex
+     * @param {int} colIndex
+     * @return {bool} isValid
+     */
     checkSquare: function(newValue,  rowIndex, colIndex) {
       var isValid = [true,0,0]; // isValid[1] is row index, isValid[2] is column index
       var baseRowIndex = rowIndex - rowIndex%3;
@@ -499,14 +641,24 @@ angular.module('starter.services', [])
             isValid[0] = false;
             isValid[1] = i;
             isValid[2] = j;
-
-            console.log("erreur sq");
+            //console.log("erreur square");
           }
         }
       }
       return isValid;
     },
 
+
+    /**
+     * This method is called whenever a new number is passed to the grid (not a note, a number!).
+     * It does erase the notes of the same value as the passed 'newValue' if it is in the same row,
+     * column or square as the cell corresponding to the passed coordinates. 
+     * 
+     * @param {int} newValue
+     * @param {int} rowIndex
+     * @param {int} colIndex
+     * @return {bool} isValid
+     */
     eraseDigits: function(newValue, rowIndex, colIndex) {
       //check row
       for (var i = 0; i<9; i++) {
@@ -533,7 +685,15 @@ angular.module('starter.services', [])
       }
     },
 
-    //return true if digit checked is there, 0 if it isnt
+
+    /**
+     * return true if digit checked is there, 0 if it isnt
+     * 
+     * @param {int} value
+     * @param {int} rowIndex
+     * @param {int} colIndex
+     * @return {int} 1 or 0
+     */
     checkDigit: function(value, rowIndex, colIndex) {
       if(grid[rowIndex][colIndex].charAt(value-1) == 1) {
         return 1;
@@ -543,6 +703,12 @@ angular.module('starter.services', [])
       }
     },
 
+
+    /**
+     * We check if every cell of the grid has the good value, comparing with the solGrid
+     * 
+     * @return {bool} isComplete
+     */
     checkIfGridIsComplete: function() {
       var isComplete = true;
       for (var i = 0; i<9 ; i++) {
@@ -559,8 +725,14 @@ angular.module('starter.services', [])
     //**************** GAME START RELATED FUNCTIONS****************
     //*************************************************************
 
+
+    /**
+     * This function generates a new grid and initializes the modifiable grid (grid), 
+     * the initial grid (initGrid) and the solution grid (solGrid).
+     * it also initializes the timers.
+     */
     startNewSoloGame: function() {
-      console.log('----startnewsologame---');
+     // console.log('----startnewsologame---');
       var newGrid = this.generateGrid();
       grid = JSON.parse(JSON.stringify(newGrid[0]));
       initGrid = JSON.parse(JSON.stringify(newGrid[0]));
@@ -569,18 +741,29 @@ angular.module('starter.services', [])
       timerSec = '00';
     },
 
+
+    /**
+     * This function qureries the server to create a new online game.
+     * The server sends back the grid for the new game as an array containing
+     * both the completed and the clean grids, both as 2 dimensions array, and the id.
+     * [[cleanGrid,completedGrid], matchId]
+     *
+     * It then initializes the modifiable grid (grid), 
+     * the initial grid (initGrid) and the solution grid (solGrid).
+     * it also initialize the timers.
+     */
     startNew1v1Game: function() {
-      console.log('----startnew1v1game---');
+      //console.log('----startnew1v1game---');
       var xhr = new XMLHttpRequest();
       xhr.open("GET", apiAddress+"/newgame/" + difficulty + "/" + playerId, false);
       xhr.send();
       console.log("status" + xhr.status);
       console.log("text" + xhr.statusText);
-      var jsonStuff = xhr.responseText;
       matchId = JSON.parse(xhr.responseText)[1];
       console.log('matchId: '+matchId);
       var completedGrid = JSON.parse(xhr.responseText)[0][1];
       var cleanGrid = JSON.parse(xhr.responseText)[0][0];
+      // initializations
       grid = JSON.parse(JSON.stringify(cleanGrid));
       initGrid = JSON.parse(JSON.stringify(cleanGrid));
       solGrid = JSON.parse(JSON.stringify(completedGrid));
@@ -588,6 +771,13 @@ angular.module('starter.services', [])
       timerSec = '00';
     },
 
+
+    /**
+     * This function gets a stringedgrid, then parses it as 2 arrays, completedGrid and cleanGrid.
+     * It then shuffle the rows, columns and digits of both grids and returns an array containing the
+     * shuffledGrids.
+     * @return {array} 
+     */
     generateGrid: function () {
       //console.log('---generateGrid---');
       var gridNumber = Math.floor(Math.random() * 10); // 0 to 9
@@ -599,6 +789,10 @@ angular.module('starter.services', [])
       return this.shuffleGrids(completedGrid, cleanGrid);
     },
 
+
+    /**
+     * This function sends a query to the server to advice of the forfeit of the player
+     */
     forfeitMatch: function () {
       this.clearGame();
       if(gameMode == 1) {
@@ -611,6 +805,12 @@ angular.module('starter.services', [])
 
     //**************** GRID SHUFFLING FUNCTIONS********************
 
+
+    /**
+     * This function does a random number of shuffeling which are all also determined randomly.
+     * It then swap a random number of pair of digits determined randomly also. 
+     * @return {array} 
+     */
     shuffleGrids: function (completedGrid, cleanGrid) {
       var shuffledGrids = [];
       shuffledGrids.push(cleanGrid);
@@ -622,6 +822,7 @@ angular.module('starter.services', [])
         var actionNumber = Math.floor(Math.random() * 4); // 0 a 3
         var row1, row2, col1, col2;
         switch(actionNumber) {
+          // swaps 2 row of squares
           case 0:
             row1 = Math.floor(Math.random() * 3) ;
             row2 = Math.floor(Math.random() * 3) ;
@@ -631,6 +832,7 @@ angular.module('starter.services', [])
             shuffledGrids[0] = this.shuffleSquareRows(shuffledGrids[0], row1, row2);
             shuffledGrids[1] = this.shuffleSquareRows(shuffledGrids[1], row1, row2);
             break;
+          // swaps 2 columns of squares
           case 1:
             col1 = Math.floor(Math.random() * 3) ;
             col2 = Math.floor(Math.random() * 3) ;
@@ -640,6 +842,7 @@ angular.module('starter.services', [])
             shuffledGrids[0] = this.shuffleSquareCols(shuffledGrids[0], col1, col2);
             shuffledGrids[1] = this.shuffleSquareCols(shuffledGrids[1], col1, col2);
             break;
+          // swaps 2 rows
           case 2:
             var rowSqu = Math.floor(Math.random() * 3);
             row1 = rowSqu*3 + Math.floor(Math.random() * 3) ;
@@ -650,6 +853,7 @@ angular.module('starter.services', [])
             shuffledGrids[0] = this.shuffleRows(shuffledGrids[0], row1, row2);
             shuffledGrids[1] = this.shuffleRows(shuffledGrids[1], row1, row2);
             break;
+          // swaps 2 columns
           case 3:
             var colSqu = Math.floor(Math.random() * 3);
             col1 = colSqu*3 + Math.floor(Math.random() * 3) ;
@@ -679,6 +883,11 @@ angular.module('starter.services', [])
       return shuffledGrids;
     },
 
+
+    /**
+     * This function swap all the cells from 2 rows of square
+     * @return {array} 
+     */
     shuffleSquareRows: function (grid , row1, row2) { //row value between 0 and 2
       //console.log('---shuffleSquareRow---');
 
@@ -709,6 +918,11 @@ angular.module('starter.services', [])
       return shuffledGrid;
     },
 
+
+    /**
+     * This function swap all the cells from 2 rows
+     * @return {array} 
+     */
     shuffleRows: function (grid, row1, row2) {
       //console.log('---ShuffleRows---');
       var shuffledGrid = [];
@@ -739,6 +953,11 @@ angular.module('starter.services', [])
       return shuffledGrid;
     },
 
+
+    /**
+     * This function swap all the cells from 2 columns of square
+     * @return {array} 
+     */
     shuffleSquareCols: function (grid, col1, col2) { //col value between 0 and 2
       //console.log('---shuffleSquareCols---');
       var shuffledGrid = [];
@@ -765,6 +984,11 @@ angular.module('starter.services', [])
       return shuffledGrid;
     },
 
+
+    /**
+     * This function swap all the cells from 2 colunmns
+     * @return {array} 
+     */
     shuffleCols: function (grid, col1, col2) {
       //console.log('---shuffleCols---');
       var shuffledGrid = [];
@@ -791,6 +1015,11 @@ angular.module('starter.services', [])
       return shuffledGrid;
     },
 
+
+    /**
+     * This function two digits on the grid
+     * @return {array} 
+     */
     swapDigits: function (grid, digit1, digit2) {
       //console.log('---swapDigits---');
       var shuffledGrid = [];
@@ -813,6 +1042,12 @@ angular.module('starter.services', [])
       return shuffledGrid;
     },
 
+
+    /**
+     * This function gets the stringed grid positioned at the gridNumber passed in the array corresponding
+     * to the difficulty of the match.
+     * @return {array} 
+     */
     getGridString: function(gridNumber) {
       //console.log ('---getGridString---');
       var gridString = '';
@@ -832,16 +1067,33 @@ angular.module('starter.services', [])
 
     },
 
+
+    /**
+     * This function gets the 81 caracters from the 81th position of the stringedGrid passed 
+     * and then parses it as an array
+     * @return {array} 
+     */
     getCompletedGrid: function(gridString) {
       var comGridString = gridString.substr(81,81);
       return this.parseStringToGrid(comGridString);
     },
 
+
+    /**
+     * This function gets the 81 first caracters of the stringedGrid passed 
+     * and then parses it as an array
+     * @return {array} 
+     */
     getCleanGrid: function(gridString) {
       var cleanGridString = gridString.substr(0,81);
       return this.parseStringToGrid(cleanGridString);
     },
 
+
+    /**
+     * This function parses the string passed to a 2 dimensional array
+     * @return {array} 
+     */
     parseStringToGrid: function(string) {
       var grid = [];
       for (var i = 0; i<9; i++) {
@@ -866,14 +1118,21 @@ angular.module('starter.services', [])
     //**************** GAME SAVING RELATED FUNCTIONS***************
     //*************************************************************
 
+
+    /**
+     * This function saves the informations of the current match depending
+     * upon if the game mode is single player or multiplayer
+     */
     saveGame: function () {
-     // console.log("---saveGame---");
+      // console.log("---saveGame---");
+      // if single player
       if(gameMode == 0) {
         this.saveGridSolo();
         this.saveInitGridSolo();
         this.saveSolGridSolo();
         this.saveTime();
       }
+      // if playing 1v1
       else if (gameMode == 1) {
         this.saveGrid1v1();
         this.saveInitGrid1v1();
@@ -882,22 +1141,41 @@ angular.module('starter.services', [])
       }
     },
 
+    /**
+     * This function saves locally the current state of the grid depending upon the difficulty
+     */
     saveGridSolo: function() {
       window.localStorage.setItem("gridSolo"+difficulty, JSON.stringify(grid));
     },
 
+
+    /**
+     * This function saves locally the initial state of the grid depending upon the difficulty
+     */
     saveInitGridSolo: function() {
       window.localStorage.setItem("initGridSolo"+difficulty, JSON.stringify(initGrid));
     },
 
+
+    /**
+     * This function saves locally the completed state of the grid depending upon the difficulty
+     */
     saveSolGridSolo: function() {
       window.localStorage.setItem("solGridSolo"+difficulty, JSON.stringify(solGrid));
     },
 
+
+    /**
+     * This function saves locally the current state of the 1v1 grid depending upon the difficulty
+     */
     saveGrid1v1: function() {
       window.localStorage.setItem("grid1v1"+difficulty, JSON.stringify(grid));
     },
 
+
+    /**
+     * This function saves locally the initial state of the 1v1 grid depending upon the difficulty
+     */
     saveInitGrid1v1: function() {
       window.localStorage.setItem("initGrid1v1"+difficulty, JSON.stringify(initGrid));
     },
@@ -906,25 +1184,40 @@ angular.module('starter.services', [])
       window.localStorage.setItem("solGrid1v1"+difficulty, JSON.stringify(solGrid));
     },
 
+
+    /**
+     * This function saves locally the completed state of the 1v1 grid depending upon the difficulty
+     */
     saveMatchId1v1: function() {
       window.localStorage.setItem("matchId1v1"+difficulty, JSON.stringify(matchId));
     },
 
+
+    /**
+     * This function queries the server to save online the score of the player
+     * @return {int} winning status
+     */
     saveScoreOnline: function () {
-      console.log('----saveScoreOnline---');
       var xhr = new XMLHttpRequest();
       var time = (parseInt(timerMin) * 60 + parseInt(timerSec)).toString();
       xhr.open("GET", apiAddress+"/savescore/" + matchId + "/" + playerId + "/" + time, false);
       xhr.send();
-      console.log("winning status: " + JSON.parse(xhr.responseText));
       return JSON.parse(xhr.responseText);
     },
 
+
+    /**
+     * This function saves the current time locally
+     */
     saveTime: function() {
       window.localStorage.setItem("timerMin"+difficulty, JSON.stringify(timerMin));
       window.localStorage.setItem("timerSec"+difficulty, JSON.stringify(timerSec));
     },
 
+
+    /**
+     * This function loads the grids and timers from the locally saved data
+     */
     loadGame: function () {
       console.log("---loadGame---");
       if(gameMode == 0) {
@@ -944,34 +1237,66 @@ angular.module('starter.services', [])
 
     },
 
+
+    /**
+     * This function loads the modifiable grid from the locally saved data
+     */
     loadGridSolo: function () {
       grid = JSON.parse(window.localStorage.getItem("gridSolo"+difficulty));
     },
 
+
+    /**
+     * This function loads the initial grid from the locally saved data
+     */
     loadInitGridSolo: function () {
       initGrid = JSON.parse(window.localStorage.getItem("initGridSolo"+difficulty));
     },
 
+
+    /**
+     * This function loads the completed grid from the locally saved data
+     */
     loadSolGridSolo: function () {
       solGrid =  JSON.parse(window.localStorage.getItem("solGridSolo"+difficulty));
     },
 
+
+    /**
+     * This function loads the 1v1 modifiable grid from the locally saved data
+     */
     loadGrid1v1: function () {
       grid = JSON.parse(window.localStorage.getItem("grid1v1"+difficulty));
     },
 
+
+    /**
+     * This function loads the 1v1 initial grid from the locally saved data
+     */
     loadInitGrid1v1: function () {
       initGrid= JSON.parse(window.localStorage.getItem("initGrid1v1"+difficulty));
     },
 
+
+    /**
+     * This function loads the 1v1 completed grid from the locally saved data
+     */
     loadSolGrid1v1: function () {
       solGrid = JSON.parse(window.localStorage.getItem("solGrid1v1"+difficulty));
     },
 
+
+    /**
+     * This function loads the 1v1 match index from the locally saved data
+     */
     loadMatchId1v1: function() {
       matchId = JSON.parse(window.localStorage.getItem("matchId1v1"+difficulty));
     },
 
+
+    /**
+     * This function queries the server to get the player's current timer for the current match
+     */
     loadTimers1v1: function() {
       console.log('----loadTimerSec1v1---');
       var xhr = new XMLHttpRequest();
@@ -983,15 +1308,28 @@ angular.module('starter.services', [])
       timerMin = (totalSecTime - timerSec) /60 ;
     },
 
+
+    /**
+     * This function loads the current minutes timer from the locally saved data
+     */
     loadTimerMin: function () {
       timerMin = JSON.parse(window.localStorage.getItem("timerMin"+difficulty));
     },
 
+
+    /**
+     * This function loads the current seconds timer from the locally saved data
+     */
     loadTimerSec: function () {
       timerSec = JSON.parse(window.localStorage.getItem("timerSec"+difficulty));
     },
 
+
+    /**
+     * This function clears the data saved locally depending upon the game mode
+     */
     clearGame: function() {
+      // game mode is solo
       if(gameMode == 0) {
         window.localStorage.removeItem("gridSolo"+difficulty);
         window.localStorage.removeItem("initGridSolo"+difficulty);
@@ -999,6 +1337,7 @@ angular.module('starter.services', [])
         window.localStorage.removeItem("timerMin"+difficulty);
         window.localStorage.removeItem("timerSec"+difficulty);
       }
+      // game mode is 1v1
       else if (gameMode == 1) {
         window.localStorage.removeItem("grid1v1"+difficulty);
         window.localStorage.removeItem("initGrid1v1"+difficulty);
@@ -1012,8 +1351,11 @@ angular.module('starter.services', [])
     //**************** GAME SETTINGS RELATED FUNCTIONS*************
     //*************************************************************
 
+
+    /**
+     * This function loads the customable settings from the locally saved data
+     */
     initializeSettings: function() {
-      console.log("initializeSettings");
       if (window.localStorage.getItem("enableErrorDetection") != undefined) {
         enableErrorDetection = JSON.parse(window.localStorage.getItem("enableErrorDetection"));
       }
@@ -1025,34 +1367,61 @@ angular.module('starter.services', [])
       }
     },
 
+
+    /**
+     * This function returns if the error detection is enabled
+     * @return {bool} enableErrorDetection
+     */
     getEnableErrorDetection: function() {
       return enableErrorDetection;
     },
 
+
+    /**
+     * This function returns if the automatic erasing of notes is enabled
+     * @return {bool} enableNoteAutoErasing
+     */
     getEnableNoteAutoErasing: function() {
       return enableNoteAutoErasing;
     },
 
+
+    /**
+     * This function returns if the number highlighting is enabled
+     * @return {bool} enableNumberHighlighting
+     */
     getEnableNumberHighlighting: function() {
       return enableNumberHighlighting;
     },
 
+
+    /**
+     * This function toggles and saves locally the error detection setting
+     */
     toggleEnableErrorDetection: function() {
       enableErrorDetection = !enableErrorDetection;
       window.localStorage.setItem("enableErrorDetection", JSON.stringify(enableErrorDetection));
-      console.log('errorDetection: '+enableErrorDetection);
+      //console.log('errorDetection: '+enableErrorDetection);
     },
 
+
+    /**
+     * This function toggles and saves locally the automatic erasing of notes setting
+     */
     toggleEnableNoteAutoErasing: function() {
       enableNoteAutoErasing = !enableNoteAutoErasing;
       window.localStorage.setItem("enableNoteAutoErasing", JSON.stringify(enableNoteAutoErasing));
-      console.log('noteautoerasing: '+enableNoteAutoErasing);
+      //console.log('noteautoerasing: '+enableNoteAutoErasing);
     },
 
+
+    /**
+     * This function toggles and saves locally the number highlighting setting
+     */
     toggleEnableNumberHighlighting: function() {
       enableNumberHighlighting = !enableNumberHighlighting;
       window.localStorage.setItem("enableNumberHighlighting", JSON.stringify(enableNumberHighlighting));
-      console.log('numberhighlight: '+enableNumberHighlighting);
+      //console.log('numberhighlight: '+enableNumberHighlighting);
     },
 
 
@@ -1060,27 +1429,47 @@ angular.module('starter.services', [])
     //**************** TIMER RELATED FUNCTIONS ********************
     //*************************************************************
 
+
+     /**
+     * This function returns the minute part of the currently displayed timer
+     * @return {int} timerMin
+     */
     getTimerMin: function() {
       return timerMin;
     },
 
+
+    /**
+     * This function returns the second part of the currently displayed timer
+     * @return {string} timerSec
+     */
     getTimerSec: function() {
       return timerSec;
     },
 
+
+    /**
+     * This function is called every seconds and increments the timer by one second.
+     * It then parses both stringed timer (min and sec) accordingly, for an esthetic display.
+     * @return {string} timerMin
+     */
     incrementTime: function() {
+      // we parse the stringed timers into int timers, and we increment the second timer
       var intTimerSec = parseInt(timerSec)+1;
       var intTimerMin = parseInt(timerMin);
+      // if the second timer reaches 60, we increment the minutes.
       if(intTimerSec == 60) {
         intTimerSec = 0;
         intTimerMin = intTimerMin +1;
       }
-      if(intTimerMin == 100) {
+      /*if(intTimerMin == 100) {
         intTimerMin = 99;
         intTimerSec = 59;
-      }
+      }*/
+      // we parse back the int timer into a string timer
       timerSec = intTimerSec.toString();
       timerMin = intTimerMin.toString();
+      // we add a '0' for a cleaner looking timer
       if (intTimerSec < 10) {
         timerSec = '0'+timerSec;
       }
@@ -1093,320 +1482,437 @@ angular.module('starter.services', [])
   };
 })
 
-  .factory('Stats', function() {
-    // Might use a resource here that returns a JSON array
+/**
+   * This service contains all the function used for displaying the stats (highscores, 
+   * recent matches and recent online results).
+   */
+.factory('Stats', function() {
+  /**
+   * This int is a reprensation of the current game mode.
+   * Its possible values are:
+   *  0 for the solo mode, in which you play alone,
+   *  1 for the 1v1 mode, in which you compete against an adversary, online,
+   *  2 for the coop mode, in which you work with someone else to complete a grid, also online ( and which is yet to be implemented)
+   *
+   * @type: int
+   */
+  var gameMode;
 
-    var gameMode; //0 is solo, 1 is 1v1, 2 is coop
-    var difficulty;
-    var highScoresEasy;
-    var highScoresMedium;
-    var highScoresHard;
-    var highScoresExtreme;
-    var recentScores;
-    var completeResults;
-    var incompleteResults;
-    var playerId = 4444;
-    var apiAddress = "http://rest-api-sudoku-app.local.humanequation.co/api";
 
-    var monthNames = [
-      "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dev"
-    ];
+  /**
+   * This string holds the value of the current difficulty of the grid. It is mainly used
+   * for grid generation.
+   *
+   * @type: string
+   */
+  var difficulty = 'easy';
 
-    return {
-      setDifficulty: function(newDiff) {
-        difficulty = newDiff;
-      },
 
-      getDifficulty: function() {
-        return difficulty;
-      },
+  /**
+   * This is an array containing the high scores in the easy diff. It is saved locally in the local
+   * storage of the same name (highScoresEasy). Each elements have the same format: [secTime, savedDate, time, actualGameMode].
+   *
+   *
+   * @type: array
+   */
+  var highScoresEasy;
 
-      setGameMode: function (newGameMode) {
-        gameMode = newGameMode;
-      },
 
-      getRecentScores: function() {
-        return recentScores;
-      },
+  /**
+   * This is an array containing the high scores in the medium diff. It is saved locally in the local
+   * storage of the same name (highScoresMedium). Each elements have the same format: [secTime, savedDate, time, actualGameMode].
+   *
+   *
+   * @type: array
+   */
+  var highScoresMedium;
 
-      saveHighScores: function() {
-        window.localStorage.setItem("highScoresEasy", JSON.stringify(highScoresEasy));
-        window.localStorage.setItem("highScoresMedium", JSON.stringify(highScoresMedium));
-        window.localStorage.setItem("highScoresHard", JSON.stringify(highScoresHard));
-        window.localStorage.setItem("highScoresExtreme", JSON.stringify(highScoresExtreme));
-        this.saveRecentScores();
-      },
 
-      loadHighScores: function() {
-        if(window.localStorage.getItem("highScoresEasy")!=undefined)
-          highScoresEasy = JSON.parse(window.localStorage.getItem("highScoresEasy"));
-        else
-          highScoresEasy = [];
-        if(window.localStorage.getItem("highScoresMedium")!=undefined)
-          highScoresMedium = JSON.parse(window.localStorage.getItem("highScoresMedium"));
-        else
-          highScoresMedium = [];
-        if(window.localStorage.getItem("highScoresHard")!=undefined)
-          highScoresHard = JSON.parse(window.localStorage.getItem("highScoresHard"));
-        else
-          highScoresHard = [];
-        if(window.localStorage.getItem("highScoresExtreme")!=undefined)
-          highScoresExtreme = JSON.parse(window.localStorage.getItem("highScoresExtreme"));
-        else
-          highScoresExtreme = [];
-      },
+  /**
+   * This is an array containing the high scores in the hard diff. It is saved locally in the local
+   * storage of the same name (highScoresHard). Each elements have the same format: [secTime, savedDate, time, actualGameMode].
+   *
+   * @type: array
+   */
+  var highScoresHard;
 
-      clearHighScores: function () {
-        console.log("---clearHighscores---");
-        window.localStorage.removeItem("highScoresEasy");
-        window.localStorage.removeItem("highScoresMedium");
-        window.localStorage.removeItem("highScoresHard");
-        window.localStorage.removeItem("highScoresExtreme");
-      },
 
-      addScore: function(timeMin, timeSec) {
-        // save with date and chrono.
-        // genre de meme ->array.push([data,chrono])
-        var savedDate = this.getStringedDate();
-        var secTime = (parseInt(timeMin * 60) + parseInt(timeSec)).toString();
-        var time = timeMin + ':' + timeSec;
-        var actualGameMode = this.getStringedGameMode();
-        if(difficulty == 'easy') {
-          highScoresEasy.push([secTime, savedDate, time, actualGameMode]);
-          highScoresEasy.sort(function(a,b){return a[0] -b[0]});
-          if(highScoresEasy.length >15) {
-            highScoresEasy.length -= 1;
-          }
+  /**
+   * This is an array containing the high scores in the extreme diff. It is saved locally in the local
+   * storage of the same name (highScoresExtreme). Each elements have the same format: [secTime, savedDate, time, actualGameMode].
+   *
+   * @type: array
+   */
+  var highScoresExtreme;
+
+
+  /**
+   * This is an array containing the recent completed matches, all difficulties together. It is saved locally in the local storage
+   * of the same name, 'recentScores'. Each elements have the same format: [secTime, savedDate, time, actualGameMode].
+   *
+   * @type: array
+   */
+  var recentScores;
+
+
+  /**
+   * This is an array containing the completed online games, which can end by a defeat, a defeat by self forfeit, a victory,
+   * a victiry by adversary forfeit or a tie. This array receives data from the server when the users goes to the stats tab.
+   * Whenever a completed match is received from the server, it isnt ever sent again, so its important to save it right away!
+   * It is displayed in the recent results tab of the stats tab.
+   *
+   * @type: array
+   */    
+  var completeResults;
+
+
+  /**
+   * This is an array containing the imcomplete online games. This array receives data from the server when the users goes to the stats tab.
+   * Differently to the completeResults, the incompleteResults are sent everytime they are queried as long as they remain incomplete. 
+   * An incomplete result is a game which isnt over yet (one or both of the results are missing).
+   * It is displayed in the recent results tab of the stats tab.
+   *
+   * @type: array
+   */
+  var incompleteResults;
+
+
+  /**
+   * This int holds the value of the player's ID, which is used for online matches.
+   *
+   * @type: int
+   */
+  var playerId = 4444;
+
+
+  /**
+   * This string is the adress of the api querried in the online mode related functions.
+   *
+   * @type: string
+   */
+  var apiAddress = "http://rest-api-sudoku-app.local.humanequation.co/api";
+
+
+  /**
+   * This array contains all the month, its used to display the current date in the scores.
+   *
+   * @type: array 
+   */
+  var monthNames = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dev"
+  ];
+
+  return {
+    
+    //*************************************************************
+    //************************ ACCESSORS **************************
+    //*************************************************************
+
+    setDifficulty: function(newDiff) {
+      difficulty = newDiff;
+    },
+
+
+    getDifficulty: function() {
+      return difficulty;
+    },
+
+
+    setGameMode: function (newGameMode) {
+      gameMode = newGameMode;
+    },
+
+
+    getRecentScores: function() {
+      return recentScores;
+    },
+
+    
+
+
+
+    /**
+     * This function is called when a game is finished by the player. 
+     * The score is added to the high scores corresponding to the current difficulty and to
+     * the recent scores. The high scores are also sorted by the completion time of the player, in seconds.
+     * @param {string} timeMin
+     * @param {string} timeSec
+      */
+    addScore: function(timeMin, timeSec) {
+      // we ge tthe current date 
+      var savedDate = this.getStringedDate();
+      // we get the timer in seconds, it will be used to parsed the highscores 
+      // from the fastest to the slowest completion time.
+      var secTime = (parseInt(timeMin * 60) + parseInt(timeSec)).toString();
+      // we parse the time that will be displayed.
+      var time = timeMin + ':' + timeSec;
+      // we get a string representing the current game mode.
+      var actualGameMode = this.getStringedGameMode();
+      if(difficulty == 'easy') {
+        highScoresEasy.push([secTime, savedDate, time, actualGameMode]);
+        highScoresEasy.sort(function(a,b){return a[0] -b[0]});
+        if(highScoresEasy.length >15) {
+          highScoresEasy.length -= 1;
         }
-        else if(difficulty == 'medium')
+      }
+      else if(difficulty == 'medium')
+      {
+        highScoresMedium.push([secTime, savedDate, time, actualGameMode]);
+        highScoresMedium.sort(function(a,b){return a[0] -b[0]});
+        if(highScoresEasy.length >15) {
+          highScoresEasy.length -= 1;
+        }
+      }
+      else if(difficulty == 'hard')
+      {
+        highScoresHard.push([secTime, savedDate, time, actualGameMode]);
+        highScoresHard.sort(function(a,b){return a[0] -b[0]});
+        if(highScoresEasy.length >15) {
+          highScoresEasy.length -= 1;
+        }
+      }
+      else if(difficulty == 'extreme')
+      {
+        highScoresExtreme.push([secTime, savedDate, time, actualGameMode]);
+        highScoresExtreme.sort(function(a,b){return a[0] -b[0]});
+        if(highScoresEasy.length >15) {
+          highScoresEasy.length -= 1;
+        }
+      }
+      // we add the recent score at the beginning of the recent scores array.
+      recentScores.unshift([savedDate, time, difficulty, actualGameMode]);
+      if(recentScores.length >15) {
+        recentScores.length -= 1;
+      }
+      //console.log("recentScores: " + recentScores);
+    },
+
+
+    /**
+     * This function saves localy all the highScores and the recentScores.
+     */
+    saveHighScores: function() {
+      window.localStorage.setItem("highScoresEasy", JSON.stringify(highScoresEasy));
+      window.localStorage.setItem("highScoresMedium", JSON.stringify(highScoresMedium));
+      window.localStorage.setItem("highScoresHard", JSON.stringify(highScoresHard));
+      window.localStorage.setItem("highScoresExtreme", JSON.stringify(highScoresExtreme));
+      this.saveRecentScores();
+    },
+
+
+    /**
+     * This function load from the local data storage the highscores if they are'nt undefined.
+     * if however they are, they are initialized into an empty array.
+     */
+    loadHighScores: function() {
+      if(window.localStorage.getItem("highScoresEasy")!=undefined)
+        highScoresEasy = JSON.parse(window.localStorage.getItem("highScoresEasy"));
+      else
+        highScoresEasy = [];
+      if(window.localStorage.getItem("highScoresMedium")!=undefined)
+        highScoresMedium = JSON.parse(window.localStorage.getItem("highScoresMedium"));
+      else
+        highScoresMedium = [];
+      if(window.localStorage.getItem("highScoresHard")!=undefined)
+        highScoresHard = JSON.parse(window.localStorage.getItem("highScoresHard"));
+      else
+        highScoresHard = [];
+      if(window.localStorage.getItem("highScoresExtreme")!=undefined)
+        highScoresExtreme = JSON.parse(window.localStorage.getItem("highScoresExtreme"));
+      else
+        highScoresExtreme = [];
+    },
+
+
+    /**
+     * This function loads the locally stored highScores, then assign their value to the 
+     * highScores used in the $scope, to update the view.
+     * @param {scope} $scope
+     */
+    updateScore: function ($scope) {
+      //console.log('---stats: update scores---');
+      this.loadHighScores();
+      $scope.easyHighScores = highScoresEasy;
+      $scope.mediumHighScores = highScoresMedium;
+      $scope.hardHighScores = highScoresHard;
+      $scope.extremeHighScores = highScoresExtreme;
+    },
+
+
+    /**
+     * This function clears the local data storage allocated to the highScores.
+     */
+    clearHighScores: function () {
+      console.log("---clearHighscores---");
+      window.localStorage.removeItem("highScoresEasy");
+      window.localStorage.removeItem("highScoresMedium");
+      window.localStorage.removeItem("highScoresHard");
+      window.localStorage.removeItem("highScoresExtreme");
+    },
+
+
+    /**
+     * This function saves the recent scores.
+     */
+    saveRecentScores: function() {
+      window.localStorage.setItem("recentScores", JSON.stringify(recentScores));
+    },
+
+
+    /**
+     * This function loads the recent scores
+     */
+    loadRecentScores: function() {
+      if(window.localStorage.getItem("recentScores")!=undefined)
+        recentScores = JSON.parse(window.localStorage.getItem("recentScores"));
+      else
+        recentScores = [];
+    },
+
+
+    /**
+     * This function loads the locally stored recent scores, then assign their value to the 
+     * recent scores used in the $scope, to update the view.
+     * @param {scope} $scope
+     */
+    updateRecentScores: function ($scope) {
+      console.log('---stats: update scores---');
+      this.loadRecentScores();
+      $scope.recentScores = recentScores;
+    },
+
+    
+    /**
+     * This function clears the local data storage allocated to the recent scores.
+     */
+    clearRecentScores: function() {
+      console.log('---stats: clearRecentScores---');
+      window.localStorage.removeItem("recentScores");
+    },
+
+    /**
+     * This function saves locally the complete online results. Incomplete online results
+     * are'nt saved because they are queried each times the user wants to visualise them (there
+     * is no need to save them since they would be overwritten anyway).
+     */
+    saveOnlineResults: function() {
+      window.localStorage.setItem("completeResults", JSON.stringify(completeResults));
+    },
+
+    /**
+     * This function queries the server and receives the online results of a player. It receives the
+     * results for completed games only once per game, and the results for incompleted games each time.
+     * In incompleted games, only the difficulty and the player's time are saved. In the completed games,
+     * the player's time, the adversary's time and the difficulty are saved, alwell as a message explaining 
+     * the final state of the game (win, defeat, forfeit, tie). Completed games are then saved locally.
+     */
+    loadOnlineResults: function() {
+      // we load the completed games in the local memory and we clear the incompleted ones,
+      // since the api sends back completed grids only once, while it sends back incompleted grids
+      // every time results are queried
+      if(window.localStorage.getItem("completeResults")!=undefined)
+        completeResults = JSON.parse(window.localStorage.getItem("completeResults"));
+      else
+        completeResults = [];
+      incompleteResults = [];
+
+      // we then check online if there is new recent result(s) 
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", apiAddress+"/getrecentresults/" + playerId, false);
+      xhr.send();
+     // console.log("json stuff: " + JSON.parse(xhr.responseText));
+      var recentResults = JSON.parse(xhr.responseText);
+      var dataArray;
+      // pos 0 is game id, 1 is winnerId, 2 is player's time, 3 is adversary time, 4 is diff
+      for(var i = 0; i<recentResults.length; i++) {
+        var winnerId = recentResults[i][1];
+
+        dataArray = [];
+        if(winnerId == null) // if there is no winner yet
         {
-          highScoresMedium.push([secTime, savedDate, time, actualGameMode]);
-          highScoresMedium.sort(function(a,b){return a[0] -b[0]});
-          if(highScoresEasy.length >15) {
-            highScoresEasy.length -= 1;
-          }
+          dataArray.push(recentResults[i][4]);
+          dataArray.push(recentResults[i][2]);        
+          incompleteResults.unshift(dataArray);
         }
-        else if(difficulty == 'hard')
-        {
-          highScoresHard.push([secTime, savedDate, time, actualGameMode]);
-          highScoresHard.sort(function(a,b){return a[0] -b[0]});
-          if(highScoresEasy.length >15) {
-            highScoresEasy.length -= 1;
+        else {
+          if (winnerId == 0) {
+            dataArray.push('It s a tie');              
           }
-        }
-        else if(difficulty == 'extreme')
-        {
-          highScoresExtreme.push([secTime, savedDate, time, actualGameMode]);
-          highScoresExtreme.sort(function(a,b){return a[0] -b[0]});
-          if(highScoresEasy.length >15) {
-            highScoresEasy.length -= 1;
-          }
-        }
-        recentScores.unshift([savedDate, time, difficulty, actualGameMode]);
-        if(recentScores.length >15) {
-          recentScores.length -= 1;
-        }
-        console.log("recentScores: " + recentScores);
-      },
-
-      parseArrayToStringHS: function (array) {
-        var stringedArray ='';
-        for(var i = 0; i < array.length; i++) {
-          if(i<9) {
-            stringedArray +=  i+1 + '.         ' + array[i][1] + '        ' + array[i][2] + "\n";
-          }
-          else {
-            stringedArray +=  i+1 + '.        ' + array[i][1] + '        ' + array[i][2] + "\n";
-          }
-        }
-        return stringedArray;
-      },
-
-      parseArrayToStringRM: function (array) {
-        var stringedArray ='';
-        for(var i = 0; i < array.length; i++) {
-            stringedArray +=  array[i][2] + '         ' + array[i][0] + '        ' + array[i][1] + "\n";
-        }
-        return stringedArray;
-      },
-
-      updateScore: function ($scope) {
-        console.log('---stats: update scores---');
-        this.loadHighScores();
-        $scope.easyHighScores = highScoresEasy;
-        $scope.mediumHighScores = highScoresMedium;
-        $scope.hardHighScores = highScoresHard;
-        $scope.extremeHighScores = highScoresExtreme;
-      },
-
-      saveRecentScores: function() {
-        window.localStorage.setItem("recentScores", JSON.stringify(recentScores));
-      },
-
-      loadRecentScores: function() {
-        if(window.localStorage.getItem("recentScores")!=undefined)
-          recentScores = JSON.parse(window.localStorage.getItem("recentScores"));
-        else
-          recentScores = [];
-      },
-
-      updateRecentScores: function ($scope) {
-        console.log('---stats: update scores---');
-        this.loadRecentScores();
-        $scope.recentScores = recentScores;
-      },
-
-      clearRecentScores: function() {
-        console.log('---stats: clearRecentScores---');
-        window.localStorage.removeItem("recentScores");
-      },
-
-      saveOnlineResults: function() {
-        window.localStorage.setItem("completeResults", JSON.stringify(completeResults));
-      },
-
-      loadOnlineResults: function() {
-        // we load the completed games in the local memory and we clear the incompleted ones,
-        // since the api sends back completed grids only once, while it sends back incompleted grids
-        // every time results are queried
-        if(window.localStorage.getItem("completeResults")!=undefined)
-          completeResults = JSON.parse(window.localStorage.getItem("completeResults"));
-        else
-          completeResults = [];
-        incompleteResults = [];
-
-        // we then check online if there is new recent result(s) 
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", apiAddress+"/getrecentresults/" + playerId, false);
-        xhr.send();
-        console.log("json stuff: " + JSON.parse(xhr.responseText));
-        var recentResults = JSON.parse(xhr.responseText);
-        var dataArray;
-        // pos 0 is game id, 1 is winnerId, 2 is player's time, 3 is adversary time, 4 is diff
-        for(var i = 0; i<recentResults.length; i++) {
-          var winnerId = recentResults[i][1];
-
-          dataArray = [];
-          if(winnerId == null) // if there is no winner yet
-          {
-            dataArray.push(recentResults[i][4]);
-            dataArray.push(recentResults[i][2]);        
-            incompleteResults.unshift(dataArray);
-          }
-          else {
-            if (winnerId == 0) {
-              dataArray.push('It s a tie');              
-            }
-            else if (winnerId == playerId) {
-              if(recentResults[i][3] == 0) {// check if adversary forfeited
-                dataArray.push('You won, your adversary forfeited.');
-              }
-              else {
-                dataArray.push('You won!');
-              }              
+          else if (winnerId == playerId) {
+            if(recentResults[i][3] == 0) {// check if adversary forfeited
+              dataArray.push('You won, your adversary forfeited.');
             }
             else {
-              if(recentResults[i][2] == 0) { // check if user forfeited
-                dataArray.push('You lost, you forfeited.');
-              }
-              else {
-                dataArray.push('You lost!');
-              }              
-            }
-            dataArray.push(recentResults[i][2]);
-            dataArray.push(recentResults[i][3]);
-            dataArray.push(recentResults[i][4]);
-            completeResults.push(dataArray);
-          }          
-        }
-        this.saveOnlineResults();
-      },
-
-      updateOnlineResults: function ($scope) {
-        console.log('---stats: update scores---');
-        this.loadOnlineResults();
-        $scope.completeResults = completeResults;
-        $scope.incompleteResults = incompleteResults;
-      },
-
-      clearOnlineResults: function() {
-        console.log('---stats: clearonlineResults---');
-        window.localStorage.removeItem("completeResults");
-      },
-
-      getStringedDate: function () {
-        var date = new Date();
-        var day = date.getDate().toString();
-        if(day.length == 1) {
-          day = '0'+ day;
-        }
-        var monthIndex = date.getMonth();
-        var year = date.getFullYear();
-
-        var stringedDate = day + ' ' + monthNames[monthIndex] + ' ' + year;
-        return stringedDate;
-      },
-
-      getStringedGameMode: function() {
-        var actualGameMode = '';
-        console.log('gameMode: ' + gameMode);
-        if(gameMode == 0) {
-          actualGameMode = 'Solo';
-        }
-        else if (gameMode == 1){
-          actualGameMode = 'Faceoff';
-        }
-        return actualGameMode;
-        console.log('actualGameMode: ' + actualGameMode);
-      }
-    };
-  })
-
-  .factory('Chats', function() {
-    // Might use a resource here that returns a JSON array
-
-    // Some fake testing data
-    var chats = [{
-      id: 0,
-      name: 'Ben Sparrow',
-      lastText: 'You on your way?',
-      face: 'img/ben.png'
-    }, {
-      id: 1,
-      name: 'Max Lynx',
-      lastText: 'Hey, it\'s me',
-      face: 'img/max.png'
-    }, {
-      id: 2,
-      name: 'Adam Bradleyson',
-      lastText: 'I should buy a boat',
-      face: 'img/adam.jpg'
-    }, {
-      id: 3,
-      name: 'Perry Governor',
-      lastText: 'Look at my mukluks!',
-      face: 'img/perry.png'
-    }, {
-      id: 4,
-      name: 'Mike Harrington',
-      lastText: 'This is wicked good ice cream.',
-      face: 'img/mike.png'
-    }];
-
-    return {
-      all: function() {
-        return chats;
-      },
-      remove: function(chat) {
-        chats.splice(chats.indexOf(chat), 1);
-      },
-      get: function(chatId) {
-        for (var i = 0; i < chats.length; i++) {
-          if (chats[i].id === parseInt(chatId)) {
-            return chats[i];
+              dataArray.push('You won!');
+            }              
           }
-        }
-        return null;
+          else {
+            if(recentResults[i][2] == 0) { // check if user forfeited
+              dataArray.push('You lost, you forfeited.');
+            }
+            else {
+              dataArray.push('You lost!');
+            }              
+          }
+          dataArray.push(recentResults[i][2]);
+          dataArray.push(recentResults[i][3]);
+          dataArray.push(recentResults[i][4]);
+          completeResults.push(dataArray);
+        }          
       }
-    };
-  });
+      this.saveOnlineResults();
+    },
+
+    /**
+     * This function loads the locally stored comlete online results, then assign their value to the 
+     * recent scores used in the $scope, to update the view.
+     * @param {scope} $scope
+     */
+    updateOnlineResults: function ($scope) {
+      //console.log('---stats: update scores---');
+      this.loadOnlineResults();
+      $scope.completeResults = completeResults;
+      $scope.incompleteResults = incompleteResults;
+    },
+
+    /**
+     * This function clears the local data storage allocated to the complete online results.
+     */
+    clearOnlineResults: function() {
+      //console.log('---stats: clearonlineResults---');
+      window.localStorage.removeItem("completeResults");
+    },
+
+    /**
+     * This function returns the current date, a bit parsed.
+     */
+    getStringedDate: function () {
+      var date = new Date();
+      var day = date.getDate().toString();
+      if(day.length == 1) {
+        day = '0'+ day;
+      }
+      var monthIndex = date.getMonth();
+      var year = date.getFullYear();
+
+      var stringedDate = day + ' ' + monthNames[monthIndex] + ' ' + year;
+      return stringedDate;
+    },
+
+     /**
+     * This function returns a string representation of the current game mode.
+     */
+    getStringedGameMode: function() {
+      var actualGameMode = '';
+      console.log('gameMode: ' + gameMode);
+      if(gameMode == 0) {
+        actualGameMode = 'Solo';
+      }
+      else if (gameMode == 1){
+        actualGameMode = 'Faceoff';
+      }
+      return actualGameMode;
+      console.log('actualGameMode: ' + actualGameMode);
+    }
+  };
+});
